@@ -6,6 +6,8 @@
 
 Zlink is a versatile and efficient database middleware designed to facilitate seamless interaction between various database systems. It can be used both as a core component within the Zngin engine and independently deployed for managing database interactions in distributed systems.
 
+https://www.zxoud.com/zlink
+
 ## Features
 
 - **Multi-database Support**: Zlink supports a wide range of databases including relational databases (e.g., MySQL, PostgreSQL) and NoSQL databases (e.g., MongoDB, Redis). Users can configure and use different database systems as per their requirements.
@@ -35,7 +37,7 @@ We welcome contributions in all forms! If you have any suggestions, bug reports,
 
 ## License
 
-This project is licensed under the [Apache License 2.0](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 For issues, suggestions, and feedback, please open an issue on GitHub.
