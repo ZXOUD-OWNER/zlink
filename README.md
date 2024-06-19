@@ -16,6 +16,10 @@ https://www.zxoud.com/zlink
 
 - **Efficient Data Transfer**: Zlink provides efficient data transfer mechanisms ensuring real-time synchronization and consistency across different databases.
 
+- **In-Memory Association Engine**: Enhances real-time data processing with fast data retrieval and operations.
+  
+- **Data Lake Functionality**：Manages and processes large-scale raw and structured data for analytics and business decisions.
+
 - **Performance Optimization**: Through caching, query optimization, and concurrency control, Zlink enhances database access performance and overall system efficiency.
 
 - **Security and Reliability**: Zlink prioritizes data security with encrypted data transmission protocols, ensuring data integrity during storage and transfer.
