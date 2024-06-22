@@ -1,7 +1,9 @@
 #pragma once
 #include "system.hpp"
+#include "CUtil.hpp"
 #include "log.hpp"
 #include "zmqGateWay.hpp"
 #include "redisClient.hpp"
 #include "interactionLogic.hpp"
 #include "Order.hpp"
+#include "Singleton.hpp"

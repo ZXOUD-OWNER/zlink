@@ -14,7 +14,3 @@ public:
     bool connect();
     void exeCommand(redisReplyWrap &reply, const std::string &order);
 };
-namespace CUtil
-{
-    std::string ConstructResponseMsgRedis(const nlohmann::json &req);
-}

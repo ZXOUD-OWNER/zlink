@@ -5,7 +5,7 @@ int main(int argc, char **argv)
     Log_MQ mq(argv[0]);
     std::vector<zmqGateWay> zGateArr;
     auto count = Singleton::getInstance().GetConf().find("BackendDealerThreadNumber").value().get<int>();
-    for (size_t i = 0; i < count; i++)
+    for (int i = 0; i < count; i++)
     {
         zGateArr.emplace_back(Singleton::getInstance().GetConf());
     }

@@ -1,32 +1,22 @@
 #pragma once
 #include "system.hpp"
 
-namespace Order
+// The parse function is used to provide the execution statement for the corresponding database
+// constructResponse is used to construct the response or result of the database execution statement
+
+namespace Redis
 {
-    class UserInit : NonCopyable
+    class VerifyCheckCode : NonCopyable
     {
     private:
         nlohmann::json _order;
         nlohmann::json _result;
+        static std::string _redisResponse;
 
     public:
-        std::string parse(const nlohmann::json &order);
-        nlohmann::json constructResponse(redisReplyWrap &replyW);
-        UserInit();
-        ~UserInit();
-    };
-
-    class ServerInit : NonCopyable
-    {
-    private:
-        nlohmann::json _order;
-        nlohmann::json _result;
-
-    public:
-        std::string parse(const nlohmann::json &order);
-        nlohmann::json constructResponse(redisReplyWrap &replyW);
-        ServerInit();
-        inline ~ServerInit()
+        nlohmann::json constructResponse(const nlohmann::json &order, redisClient &memoryData);
+        VerifyCheckCode();
+        inline ~VerifyCheckCode()
         {
         }
     };
