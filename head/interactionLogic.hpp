@@ -1,5 +1,6 @@
 #pragma once
 #include "system.hpp"
+#include "Singleton.hpp"
 
 class interactionLogic : NonCopyable
 {
@@ -15,9 +16,8 @@ public:
     void inline exeOrder(const nlohmann::json &order, nlohmann::json &result)
     {
         T OrderParse;
-        std::string redisOrder = OrderParse.parse(order);
-        redisReplyWrap replyW;
-        _redis.exeCommand(replyW, redisOrder);
-        result = OrderParse.constructResponse(replyW);
+        result = OrderParse.constructResponse(order, _redis);
     }
+
+    void exeOrder(const nlohmann::json &order, nlohmann::json &result);
 };

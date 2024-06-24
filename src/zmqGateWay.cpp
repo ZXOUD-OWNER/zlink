@@ -72,9 +72,20 @@ void zmqGateWay::worker(zsock_t *pipe, void *args)
         zframe_t *frame1 = zmsg_pop(old_msg);
         zframe_t *frame2 = zmsg_pop(old_msg);
         // zframe_t *frame3 = zmsg_pop(old_msg);
-        CUitl::GetZMsg(old_msg, content);
+        CUtil::GetZMsg(old_msg, content);
         auto json = nlohmann::json::parse(content);
-        auto msg = CUtil::ConstructResponseMsgRedis(json);
+        std::string msg;
+        switch (Singleton::getInstance().GetDataBaseType())
+        {
+        case 0:
+            msg = CUtil::ConstructResponseMsgRedis(json);
+            break;
+        case 1:
+
+        default:
+            LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::Print_trace();
+            break;
+        }
 
         // auto k = zmsg_size(old_msg);
         zmsg_append(new_msg, &frame1);

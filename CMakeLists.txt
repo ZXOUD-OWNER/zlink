@@ -1,11 +1,19 @@
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
-project(zmqRedisServer VERSION 1.0)
+project(zlink VERSION 1.0)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -Wall -Wextra")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS_RELEASE "-pipe -fomit-frame-pointer -foptimize-sibling-calls -foptimize-strlen -frerun-cse-after-loop -fstrict-aliasing -fweb -ftree-vrp -ftree-pta -ftree-loop-vectorize -fvect-cost-model -finline-functions -funswitch-loops -flto=auto")
-set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14.1.1")
+        message(FATAL_ERROR "GCC version must be at least 14.1.1!")
+    endif()
+endif()
+
+
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pipe -fomit-frame-pointer -foptimize-sibling-calls -foptimize-strlen -frerun-cse-after-loop -fstrict-aliasing -fweb -ftree-vrp -ftree-pta -ftree-loop-vectorize -fvect-cost-model -finline-functions -funswitch-loops -flto=auto")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto")
 set(ENV{PKG_CONFIG_PATH} "/usr/local/lib/pkgconfig/")
 find_package (glog 0.7.0 REQUIRED)
@@ -26,5 +34,5 @@ INCLUDE_DIRECTORIES("/usr/include")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/head)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SOURCES)
 
-add_executable(zmqRedisServer ${SOURCES})
-target_link_libraries(zmqRedisServer pthread PkgConfig::zmq glog::glog PkgConfig::redis -lunwind -lunwind-x86_64)
+add_executable(zlink ${SOURCES})
+target_link_libraries(zlink pthread PkgConfig::zmq glog::glog PkgConfig::redis -lunwind -lunwind-x86_64)
