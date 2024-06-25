@@ -20,4 +20,19 @@ namespace Redis
         {
         }
     };
+
+    class SetCheckCode : NonCopyable
+    {
+    private:
+        nlohmann::json _order;
+        nlohmann::json _result;
+        static std::string _redisResponse;
+
+    public:
+        nlohmann::json constructResponse(const nlohmann::json &order, redisClient &memoryData);
+        SetCheckCode();
+        inline ~SetCheckCode()
+        {
+        }
+    };
 }
