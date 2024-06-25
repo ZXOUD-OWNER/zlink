@@ -9,6 +9,14 @@ std::string Redis::VerifyCheckCode::_redisResponse("{ \
     \"result\":\"verifyCheckCode\"\
 }");
 
+std::string Redis::SetCheckCode::_redisResponse("{ \
+    \"sender\":\"redisService\", \
+    \"receive\":\"web\",\
+    \"level\":\"user\",\
+    \"success\":\"\",\
+    \"result\":\"SetCheckCode\"\
+}");
+
 Redis::VerifyCheckCode::VerifyCheckCode()
 {
 }
