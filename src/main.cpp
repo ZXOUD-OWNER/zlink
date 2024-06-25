@@ -1,4 +1,5 @@
 #include "head.hpp"
+#include <mimalloc-new-delete.h>
 
 int main(int argc, char **argv)
 {

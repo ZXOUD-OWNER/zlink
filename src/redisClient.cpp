@@ -6,12 +6,12 @@ redisClient::redisClient(const nlohmann::json &value)
     {
         LOG(FATAL) << "config.json not config MemoryDataBase info";
     }
-    auto value2 = value.find("MemoryDataBase").value().object();
-    if (value.find("Redis") == value.end())
+    auto value2 = value.find("MemoryDataBase").value();
+    if (value2.find("Redis") == value.end())
     {
         LOG(FATAL) << "config.json not config redis info";
     }
-    auto value3 = value2.find("Redis").value().object();
+    auto value3 = value2.find("Redis").value();
 
     _connectIP = value3.find("RedisConnectIP").value().get<std::string>();
     _port = value3.find("RedisConnectPort").value().get<int>();

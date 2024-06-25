@@ -3,7 +3,7 @@
 interactionLogic::interactionLogic(const nlohmann::json &Conf)
     : _redis(Conf)
 {
-    auto _logicConf = Conf.find("LogicConf").value().object();
+    auto _logicConf = Conf.find("LogicConf").value();
 }
 
 interactionLogic::~interactionLogic()
