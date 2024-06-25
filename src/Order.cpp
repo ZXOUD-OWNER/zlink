@@ -70,3 +70,34 @@ nlohmann::json Redis::VerifyCheckCode::constructResponse(const nlohmann::json &o
 
     return result;
 }
+
+Redis::SetCheckCode::SetCheckCode()
+{
+}
+
+nlohmann::json Redis::SetCheckCode::constructResponse(const nlohmann::json &order, redisClient &memoryData)
+{  
+    auto Iter = order.find("CheckCode");
+    auto Iter2 = order.find("CheckCodeKeyName");
+    nlohmann::json result;
+    result = nlohmann::json::parse(_redisResponse);
+    result["success"] = 0;
+    if (Iter == order.end() || Iter2 == order.end())
+    {
+        LOG(ERROR) << "not found CheckCode;order is " << order.dump();
+        //....please construct err response Json
+        return result;
+    }
+
+    std::string checkcode = Iter.value().get<std::string>();
+    std::string CheckCodeKeyName = Iter2.value().get<std::string>();
+    redisReplyWrap redisReply;
+    std::string cmd = std::format("SET {} {}", CheckCodeKeyName, checkcode);
+    memoryData.exeCommand(redisReply, cmd);
+    if(redisReply.reply && strcmp(redisReply.reply->str, "OK") == 0)
+    {
+        //....please construct err response Json
+        result["success"] = 1;
+    }
+    return result;
+}
