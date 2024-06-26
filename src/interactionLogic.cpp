@@ -1,15 +1,5 @@
 #include "head.hpp"
 
-interactionLogic::interactionLogic(const nlohmann::json &Conf)
-    : _redis(Conf)
-{
-    auto _logicConf = Conf.find("LogicConf").value();
-}
-
-interactionLogic::~interactionLogic()
-{
-}
-
 // void interactionLogic::exeOrder(const nlohmann::json &order, nlohmann::json &result)
 // {
 //     const std::unordered_map<std::string, RedisOrder> &redisOrder = Singleton::getInstance().GetRedisOrder();

@@ -2,7 +2,7 @@
 
 std::string CUtil::ConstructResponseMsgRedis(const nlohmann::json &req)
 {
-    thread_local interactionLogic interaction(Singleton::getInstance().GetConf());
+    thread_local interactionLogic<redisClient> interaction(Singleton::getInstance().GetConf());
     nlohmann::json resJson;
 
     auto orderIter = req.find("order");
@@ -24,6 +24,40 @@ std::string CUtil::ConstructResponseMsgRedis(const nlohmann::json &req)
     {
     case 0:
         interaction.exeOrder<Redis::VerifyCheckCode>(req, resJson);
+        break;
+
+    default:
+        LOG(ERROR) << "The command corresponding to Redis parsing logic has not been developed.order is " << orderStr;
+        break;
+    }
+
+    return std::string(resJson.dump());
+}
+
+std::string CUtil::ConstructResponseMsgPgSQL(const nlohmann::json &req)
+{
+    thread_local interactionLogic<pgsqlClient> interaction(Singleton::getInstance().GetConf());
+    nlohmann::json resJson;
+
+    auto orderIter = req.find("order");
+    if (orderIter == req.end())
+    {
+        LOG(ERROR) << "req has err! not found specify field(order). req is " << req.dump();
+        return std::string("-1");
+    }
+    std::string orderStr = orderIter.value().get<std::string>();
+    const auto &orderMap = Singleton::getInstance().GetRedisOrder();
+    auto iter = orderMap.find(orderStr);
+    if (iter == orderMap.end())
+    {
+        LOG(ERROR) << "The command corresponding to Redis parsing logic has not been developed.order is " << orderStr;
+        return std::string("-1");
+    }
+
+    switch (iter->second)
+    {
+    case 0:
+        interaction.exeOrder<SQL::Register>(req, resJson);
         break;
 
     default:

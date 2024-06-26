@@ -7,3 +7,4 @@
 #include "interactionLogic.hpp"
 #include "Order.hpp"
 #include "Singleton.hpp"
+#include "pgsqlClient.hpp"

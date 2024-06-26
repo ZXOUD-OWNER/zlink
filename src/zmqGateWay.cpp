@@ -81,7 +81,7 @@ void zmqGateWay::worker(zsock_t *pipe, void *args)
             msg = CUtil::ConstructResponseMsgRedis(json);
             break;
         case 1:
-
+            msg = CUtil::ConstructResponseMsgPgSQL(json);
         default:
             LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::Print_trace();
             break;

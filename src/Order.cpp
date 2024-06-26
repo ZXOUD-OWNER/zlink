@@ -84,7 +84,7 @@ Redis::SetCheckCode::SetCheckCode()
 }
 
 nlohmann::json Redis::SetCheckCode::constructResponse(const nlohmann::json &order, redisClient &memoryData)
-{  
+{
     auto Iter = order.find("CheckCode");
     auto Iter2 = order.find("CheckCodeKeyName");
     nlohmann::json result;
@@ -102,10 +102,20 @@ nlohmann::json Redis::SetCheckCode::constructResponse(const nlohmann::json &orde
     redisReplyWrap redisReply;
     std::string cmd = std::format("SET {} {}", CheckCodeKeyName, checkcode);
     memoryData.exeCommand(redisReply, cmd);
-    if(redisReply.reply && strcmp(redisReply.reply->str, "OK") == 0)
+    if (redisReply.reply && strcmp(redisReply.reply->str, "OK") == 0)
     {
         //....please construct err response Json
         result["success"] = 1;
     }
     return result;
+}
+
+SQL::Register::Register()
+{
+}
+
+nlohmann::json SQL::Register::constructResponse(const nlohmann::json &order, pgsqlClient &memoryData)
+{
+    nlohmann::json res;
+    return res;
 }
