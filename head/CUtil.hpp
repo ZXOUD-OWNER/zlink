@@ -5,6 +5,7 @@ struct CUtil
 {
     static std::string Print_trace();
     static std::string ConstructResponseMsgRedis(const nlohmann::json &req);
+    static std::string ConstructResponseMsgPgSQL(const nlohmann::json &req);
     static inline void GetZMsg(zmsg_t *msg, std::string &msgStr)
     {
         char *frame_content;

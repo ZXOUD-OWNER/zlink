@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <utility>
 #include <variant>
+#include <pqxx/pqxx>
 #define WORKER_READY "\001"
 
 class NonCopyable

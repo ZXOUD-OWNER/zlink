@@ -36,3 +36,8 @@ namespace Redis
         }
     };
 }
+
+namespace SQL
+{
+
+}
