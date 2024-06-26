@@ -36,7 +36,7 @@ std::string CUtil::ConstructResponseMsgRedis(const nlohmann::json &req)
 
 std::string CUtil::ConstructResponseMsgPgSQL(const nlohmann::json &req)
 {
-    thread_local interactionLogic<redisClient> interaction(Singleton::getInstance().GetConf());
+    thread_local interactionLogic<pgsqlClient> interaction(Singleton::getInstance().GetConf());
     nlohmann::json resJson;
 
     auto orderIter = req.find("order");
@@ -57,7 +57,7 @@ std::string CUtil::ConstructResponseMsgPgSQL(const nlohmann::json &req)
     switch (iter->second)
     {
     case 0:
-        interaction.exeOrder<Redis::VerifyCheckCode>(req, resJson);
+        interaction.exeOrder<SQL::Register>(req, resJson);
         break;
 
     default:
