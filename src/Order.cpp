@@ -147,11 +147,6 @@ SQL::Register::Register()
 {
 }
 
-bool SQL::SQLOperation::isOrderRight(const nlohmann::json &order, std::string orType)
-{
-    return order.find("order").value().get<std::string>() == orType;
-}
-
 bool SQL::SQLOperation::sqlExec(std::string cmd, pgsqlClient &memoryData, pqxx::result &reply)
 {
     bool ret = false;
@@ -186,11 +181,6 @@ nlohmann::json SQL::Register::constructResponse(const nlohmann::json &order, pgs
     result = nlohmann::json::parse(_sqlResponse);
     result["email"] = email;
     result["success"] = 0;
-    if(!isOrderRight(order, "register"))
-    {
-        LOG(ERROR) << "order error;cur order is " << order.dump();
-        return result;
-    }
     if (Iter0 == order.end() || Iter1 == order.end() || Iter2 == order.end() || Iter3 == order.end() || Iter4 == order.end())
     {
         LOG(ERROR) << "The required fields are blank, please check!Cur order is " << order.dump();
@@ -218,11 +208,6 @@ nlohmann::json SQL::Login::constructResponse(const nlohmann::json &order, pgsqlC
     result = nlohmann::json::parse(_sqlResponse);
     result["success"] = 0;
     result["correct"] = 0;
-    if(!isOrderRight(order, "login"))
-    {
-        LOG(ERROR) << "order error;cur order is " << order.dump();
-        return result;
-    }
     if (Iter0 == order.end())
     {
         LOG(ERROR) << "The required fields are blank, please check!Cur order is " << order.dump();
@@ -240,7 +225,6 @@ nlohmann::json SQL::Login::constructResponse(const nlohmann::json &order, pgsqlC
             result["correct"] = 1;
         }
     }
-    LOG(ERROR) << result.dump();
     return result;
 }
 
@@ -258,11 +242,6 @@ nlohmann::json SQL::ChangerPassword::constructResponse(const nlohmann::json &ord
     result = nlohmann::json::parse(_sqlResponse);
     result["email"] = email;
     result["success"] = 0;
-    if(!isOrderRight(order, "ChangerPassword"))
-    {
-        LOG(ERROR) << "order error;cur order is " << order.dump();
-        return result;
-    }
     if (Iter0 == order.end())
     {
         LOG(ERROR) << "The required fields are blank, please check!Cur order is " << order.dump();

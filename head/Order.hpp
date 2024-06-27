@@ -46,7 +46,6 @@ namespace SQL
         nlohmann::json _order;
         nlohmann::json _result;
     protected:
-        bool isOrderRight(const nlohmann::json &order, std::string orType);
         bool sqlExec(std::string sql, pgsqlClient &memoryData, pqxx::result &reply);
     public:
         virtual nlohmann::json constructResponse(const nlohmann::json &order, pgsqlClient &memoryData) = 0;
