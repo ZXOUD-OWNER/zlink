@@ -40,13 +40,26 @@ namespace Redis
 
 namespace SQL
 {
-    class Register : NonCopyable
+    class SQLOperation
     {
-    private:
+    protected:
         nlohmann::json _order;
         nlohmann::json _result;
-        static std::string _redisResponse;
+    protected:
+        bool isOrderRight(const nlohmann::json &order, std::string orType);
+        bool sqlExec(std::string sql, pgsqlClient &memoryData, pqxx::result &reply);
+    public:
+        virtual nlohmann::json constructResponse(const nlohmann::json &order, pgsqlClient &memoryData) = 0;
+        SQLOperation();
+        virtual ~SQLOperation()
+        {
+        }
+    };
 
+    class Register : public NonCopyable, public SQLOperation
+    {
+    private:
+        static std::string _sqlResponse;
     public:
         nlohmann::json constructResponse(const nlohmann::json &order, pgsqlClient &memoryData);
         Register();
@@ -54,4 +67,30 @@ namespace SQL
         {
         }
     };
+
+    class Login : public NonCopyable, public SQLOperation
+    {
+    private:
+        static std::string _sqlResponse;
+    public:
+        nlohmann::json constructResponse(const nlohmann::json &order, pgsqlClient &memoryData);
+        Login();
+        inline ~Login()
+        {
+        }
+    };
+
+    class ChangerPassword : public NonCopyable, public SQLOperation
+    {
+    private:
+        static std::string _sqlResponse;
+        
+    public:
+        nlohmann::json constructResponse(const nlohmann::json &order, pgsqlClient &memoryData);
+        ChangerPassword();
+        inline ~ChangerPassword()
+        {
+        }
+    };
+
 }
