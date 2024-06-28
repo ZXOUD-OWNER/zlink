@@ -13,11 +13,10 @@ Singleton::Singleton()
         {
             LOG(FATAL) << "config.json not has enough data" << " func stack is " << CUtil::printTrace();
         }
-
-        auto IOThreadNumber = _conf.find("IOThreadNumber").value().get<int>();
+        auto ioThreadNumber = _conf.find("IOThreadNumber").value().get<int>();
         // Init global zmq of IO thread Numbers
-        zsys_set_io_threads(IOThreadNumber);
-        _EnableDataBaseType = _conf.find("EnableDataBaseType").value().get<int>();
+        zsys_set_io_threads(ioThreadNumber);
+        _enableDataBaseType = _conf.find("EnableDataBaseType").value().get<int>();
     }
     catch (const std::exception &e)
     {
@@ -25,11 +24,6 @@ Singleton::Singleton()
     }
 };
 
-/*
-    Used to initialize the relationship between the instruction string and the number,
-which is convenient for the exeOrder function in InteractionLogic of CUtil::constructResponseMsgRedis.
-    The selection of class template parameters
-*/
 void Singleton::initRedisOrder()
 {
     _redisOrder.reserve(100 * 2);

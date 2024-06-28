@@ -37,13 +37,13 @@ protected:
 
 struct RedisReplyWrap : NonCopyable
 {
-    redisReply *reply = nullptr;
+    redisReply *_reply = nullptr;
     inline ~RedisReplyWrap()
     {
-        if (reply != nullptr)
+        if (_reply != nullptr)
         {
-            freeReplyObject(reply);
-            reply = nullptr;
+            freeReplyObject(_reply);
+            _reply = nullptr;
         }
     }
 };

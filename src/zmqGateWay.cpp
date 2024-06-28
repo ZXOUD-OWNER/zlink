@@ -34,7 +34,6 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
 {
     auto &zmqGate = *(static_cast<ZmqGateway *>(args));
     zsock_signal(pipe, 0);
-
     std::string tcpStr = "tcp://";
     tcpStr += zmqGate._routerIP + ":" + std::to_string(zmqGate._routerPort);
     zmqGate._sock = zsock_new_req(tcpStr.c_str());
@@ -43,14 +42,11 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
         LOG(ERROR) << "connect zio err!";
         return;
     }
-
     zmqGate._poller = zpoller_new(pipe, zmqGate._sock, NULL);
     zpoller_set_nonstop(zmqGate._poller, true);
-
     //  Tell broker we're ready for work
     zframe_t *frame = zframe_new(WORKER_READY, 1);
     zframe_send(&frame, zmqGate._sock, 0);
-
     //  Process messages as they arrive
     while (true)
     {
@@ -64,14 +60,11 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
 
         zmsg_t *old_msg = zmsg_recv(zmqGate._sock);
         if (!old_msg)
-            break; //  Interrupted
-
+            break; // Interrupted
         std::string content;
-        // content.append("hello hundang kkkkkkk");
         zmsg_t *new_msg = zmsg_new();
         zframe_t *frame1 = zmsg_pop(old_msg);
         zframe_t *frame2 = zmsg_pop(old_msg);
-        // zframe_t *frame3 = zmsg_pop(old_msg);
         CUtil::getZMsg(old_msg, content);
         auto json = nlohmann::json::parse(content);
         std::string msg;
@@ -86,14 +79,10 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
             LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::printTrace();
             break;
         }
-
-        // auto k = zmsg_size(old_msg);
         zmsg_append(new_msg, &frame1);
         zmsg_append(new_msg, &frame2);
-
         zframe_t *frame4 = zframe_new(msg.c_str(), msg.length());
         zmsg_append(new_msg, &frame4); // can not use zmsg_pushstr,has problem
-
         zmsg_send(&new_msg, zmqGate._sock);
     }
 }

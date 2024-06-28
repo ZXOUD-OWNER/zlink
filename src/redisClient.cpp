@@ -50,5 +50,5 @@ void RedisClient::exeCommand(RedisReplyWrap &reply, const std::string &order)
         LOG(ERROR) << "Failed to execute command: " << _client->errstr << " func stack is " << CUtil::printTrace();
         return;
     }
-    reply.reply = replyTemp;
+    reply._reply = replyTemp;
 }

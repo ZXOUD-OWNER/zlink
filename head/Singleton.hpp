@@ -20,11 +20,15 @@ private:
 
 private:
     nlohmann::json _conf;
-    int _EnableDataBaseType = -1;
+    int _enableDataBaseType = -1;
     std::unordered_map<std::string, int> _redisOrder;
 
 private:
-    //@description: init redis order type as a map
+    /*@description: init redis order type as a map.
+    Used to initialize the relationship between the instruction string and the number,
+    which is convenient for the exeOrder function in InteractionLogic of CUtil::constructResponseMsgRedis.
+    The selection of class template parameters
+    */
     void initRedisOrder();
 
 public:
@@ -51,7 +55,7 @@ public:
      */
     inline int GetDataBaseType()
     {
-        return _EnableDataBaseType;
+        return _enableDataBaseType;
     }
     /**
      * @description: get redis order
