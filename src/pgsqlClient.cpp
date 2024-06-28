@@ -1,9 +1,10 @@
 #include "head.hpp"
 
 pgsqlClient::pgsqlClient(const nlohmann::json &value)
+:_conn(pgsqlClient::parse(value))
 {
-    _connectStr = pgsqlClient::parse(value);
-    _conn = std::move(pqxx::connection(_connectStr));
+    // _connectStr = pgsqlClient::parse(value);
+    // _conn = std::move(pqxx::connection(_connectStr));
     if (_conn.is_open())
     {
         LOG(INFO) << "database connect success! str is " << _connectStr;
@@ -41,7 +42,7 @@ std::string pgsqlClient::parse(const nlohmann::json &value)
         auto pgsqlIter = iter.value().find("Postgres");
         if (pgsqlIter != iter.value().end())
         {
-            auto PostgresIPIter = pgsqlIter.value().find("127.0.0.1");
+            auto PostgresIPIter = pgsqlIter.value().find("PostgresIP");//127.0.0.1");
             auto PostgresPortIter = pgsqlIter.value().find("PostgresPort");
             auto dbnameIter = pgsqlIter.value().find("dbname");
             auto userIter = pgsqlIter.value().find("user");
