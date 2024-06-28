@@ -52,7 +52,7 @@ redis::VerifyCheckCode::VerifyCheckCode()
 nlohmann::json redis::VerifyCheckCode::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
 {
     auto iter = order.find("CheckCode");
-    auto iter2 = order.find("checkCodeKeyName");
+    auto iter2 = order.find("CheckCodeKeyName");
     nlohmann::json result;
     result = nlohmann::json::parse(_redisResponse);
     if (iter == order.end() || iter2 == order.end())
@@ -108,7 +108,7 @@ redis::SetCheckCode::SetCheckCode()
 nlohmann::json redis::SetCheckCode::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
 {
     auto iter = order.find("CheckCode");
-    auto iter2 = order.find("checkCodeKeyName");
+    auto iter2 = order.find("CheckCodeKeyName");
     nlohmann::json result;
     result = nlohmann::json::parse(_redisResponse);
     result["success"] = 0;
