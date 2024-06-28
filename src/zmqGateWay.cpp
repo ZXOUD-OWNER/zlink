@@ -58,14 +58,14 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
         else
             assert(ready == zmqGate._sock); // Data Available
 
-        zmsg_t *old_msg = zmsg_recv(zmqGate._sock);
-        if (!old_msg)
+        zmsg_t *oldMsg = zmsg_recv(zmqGate._sock);
+        if (!oldMsg)
             break; // Interrupted
         std::string content;
-        zmsg_t *new_msg = zmsg_new();
-        zframe_t *frame1 = zmsg_pop(old_msg);
-        zframe_t *frame2 = zmsg_pop(old_msg);
-        CUtil::getZMsg(old_msg, content);
+        zmsg_t *newMsg = zmsg_new();
+        zframe_t *frame1 = zmsg_pop(oldMsg);
+        zframe_t *frame2 = zmsg_pop(oldMsg);
+        CUtil::getZMsg(oldMsg, content);
         auto json = nlohmann::json::parse(content);
         std::string msg;
         switch (Singleton::getInstance().GetDataBaseType())
@@ -79,11 +79,11 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
             LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::printTrace();
             break;
         }
-        zmsg_append(new_msg, &frame1);
-        zmsg_append(new_msg, &frame2);
+        zmsg_append(newMsg, &frame1);
+        zmsg_append(newMsg, &frame2);
         zframe_t *frame4 = zframe_new(msg.c_str(), msg.length());
-        zmsg_append(new_msg, &frame4); // can not use zmsg_pushstr,has problem
-        zmsg_send(&new_msg, zmqGate._sock);
+        zmsg_append(newMsg, &frame4); // can not use zmsg_pushstr,has problem
+        zmsg_send(&newMsg, zmqGate._sock);
     }
 }
 
