@@ -1,17 +1,17 @@
 #include "head.hpp"
 
-zmqGateWay::zmqGateWay(const nlohmann::json &value)
+ZmqGateway::ZmqGateway(const nlohmann::json &value)
 {
     if (value.find("RouterIP") == value.end() || value.find("RouterPort") == value.end())
     {
-        LOG(FATAL) << "config.json not config zmqGateWay info";
+        LOG(FATAL) << "config.json not config ZmqGateway info";
     }
     _routerIP = value.find("RouterIP").value().get<std::string>();
     _routerPort = value.find("RouterPort").value().get<int>();
     start();
 }
 
-zmqGateWay::~zmqGateWay()
+ZmqGateway::~ZmqGateway()
 {
     if (_poller != nullptr)
     {
@@ -30,9 +30,9 @@ zmqGateWay::~zmqGateWay()
     _actor = nullptr;
 }
 
-void zmqGateWay::worker(zsock_t *pipe, void *args)
+void ZmqGateway::worker(zsock_t *pipe, void *args)
 {
-    auto &zmqGate = *(static_cast<zmqGateWay *>(args));
+    auto &zmqGate = *(static_cast<ZmqGateway *>(args));
     zsock_signal(pipe, 0);
 
     std::string tcpStr = "tcp://";
@@ -72,18 +72,18 @@ void zmqGateWay::worker(zsock_t *pipe, void *args)
         zframe_t *frame1 = zmsg_pop(old_msg);
         zframe_t *frame2 = zmsg_pop(old_msg);
         // zframe_t *frame3 = zmsg_pop(old_msg);
-        CUtil::GetZMsg(old_msg, content);
+        CUtil::getZMsg(old_msg, content);
         auto json = nlohmann::json::parse(content);
         std::string msg;
         switch (Singleton::getInstance().GetDataBaseType())
         {
         case 0:
-            msg = CUtil::ConstructResponseMsgRedis(json);
+            msg = CUtil::constructResponseMsgRedis(json);
             break;
         case 1:
-            msg = CUtil::ConstructResponseMsgPgSQL(json);
+            msg = CUtil::constructResponseMsgPgSQL(json);
         default:
-            LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::Print_trace();
+            LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::printTrace();
             break;
         }
 
@@ -98,7 +98,7 @@ void zmqGateWay::worker(zsock_t *pipe, void *args)
     }
 }
 
-void zmqGateWay::start()
+void ZmqGateway::start()
 {
     _actor = zactor_new(worker, this);
 }

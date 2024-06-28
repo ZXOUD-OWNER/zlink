@@ -1,6 +1,6 @@
 #include "head.hpp"
 
-redisClient::redisClient(const nlohmann::json &value)
+RedisClient::RedisClient(const nlohmann::json &value)
 {
     if (value.find("MemoryDataBase") == value.end())
     {
@@ -18,7 +18,7 @@ redisClient::redisClient(const nlohmann::json &value)
     connect();
 }
 
-redisClient::~redisClient()
+RedisClient::~RedisClient()
 {
     if (_client != nullptr)
     {
@@ -27,12 +27,12 @@ redisClient::~redisClient()
     }
 }
 
-bool redisClient::connect()
+bool RedisClient::connect()
 {
     _client = redisConnect(_connectIP.c_str(), _port);
     if (_client == nullptr || _client->err)
     {
-        LOG(ERROR) << "redis Connect err! func stack is " << CUtil::Print_trace();
+        LOG(ERROR) << "redis Connect err! func stack is " << CUtil::printTrace();
         if (_client->err)
         {
             LOG(ERROR) << "redis Connect err is " << _client->errstr;
@@ -42,23 +42,13 @@ bool redisClient::connect()
     return true;
 }
 
-void redisClient::exeCommand(redisReplyWrap &reply, const std::string &order)
+void RedisClient::exeCommand(RedisReplyWrap &reply, const std::string &order)
 {
     auto *replyTemp = static_cast<redisReply *>(redisCommand(_client, order.c_str()));
     if (replyTemp == nullptr)
     {
-        LOG(ERROR) << "Failed to execute command: " << _client->errstr << " func stack is " << CUtil::Print_trace();
+        LOG(ERROR) << "Failed to execute command: " << _client->errstr << " func stack is " << CUtil::printTrace();
         return;
     }
-
-    // if (replyTemp->type == REDIS_REPLY_STATUS && strcmp(replyTemp->str, "OK") == 0)
-    // {
-    //     LOG(INFO) << "Successfully set key";
-    // }
-    // else
-    // {
-    //     LOG(WARNING) << "Failed to set key";
-    // }
-
     reply.reply = replyTemp;
 }

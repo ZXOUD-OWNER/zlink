@@ -1,3 +1,11 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: 20240620
+ * FilePath: /zlink/head/system.hpp
+ * Description: some system tools
+ */
 #pragma once
 #include <mimalloc-override.h>
 #include <czmq.h>
@@ -19,20 +27,18 @@
 class NonCopyable
 {
 protected:
-    NonCopyable() = default;  // Allow default constructor
-    ~NonCopyable() = default; // Allow default destructor
-
-    NonCopyable(const NonCopyable &) = delete;            // Disallow copy constructor
-    NonCopyable &operator=(const NonCopyable &) = delete; // Disallow assignment operator
-
-    NonCopyable(NonCopyable &&) = delete;            // Disallow move constructor
-    NonCopyable &operator=(NonCopyable &&) = delete; // Disallow move assignment operator
+    NonCopyable() = default;
+    ~NonCopyable() = default;
+    NonCopyable(const NonCopyable &) = delete;
+    NonCopyable &operator=(const NonCopyable &) = delete;
+    NonCopyable(NonCopyable &&) = delete;
+    NonCopyable &operator=(NonCopyable &&) = delete;
 };
 
-struct redisReplyWrap : NonCopyable
+struct RedisReplyWrap : NonCopyable
 {
     redisReply *reply = nullptr;
-    inline ~redisReplyWrap()
+    inline ~RedisReplyWrap()
     {
         if (reply != nullptr)
         {

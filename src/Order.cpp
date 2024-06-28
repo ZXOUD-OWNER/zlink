@@ -1,7 +1,7 @@
 #include "head.hpp"
 #include "Order.hpp"
 
-std::string Redis::VerifyCheckCode::_redisResponse("{ \
+std::string redis::VerifyCheckCode::_redisResponse("{ \
     \"sender\":\"redisService\", \
     \"receive\":\"web\",\
     \"level\":\"user\",\
@@ -10,7 +10,7 @@ std::string Redis::VerifyCheckCode::_redisResponse("{ \
     \"result\":\"verifyCheckCode\"\
 }");
 
-std::string Redis::SetCheckCode::_redisResponse("{ \
+std::string redis::SetCheckCode::_redisResponse("{ \
     \"sender\":\"redisService\", \
     \"receive\":\"web\",\
     \"level\":\"user\",\
@@ -18,7 +18,7 @@ std::string Redis::SetCheckCode::_redisResponse("{ \
     \"result\":\"SetCheckCode\"\
 }");
 
-std::string SQL::Register::_sqlResponse("{ \
+std::string pgsql::Register::_sqlResponse("{ \
     \"sender\":\"dataBaseService\", \
     \"receive\":\"web\",\
     \"level\":\"user\",\
@@ -27,7 +27,7 @@ std::string SQL::Register::_sqlResponse("{ \
     \"success\":0\
 }");
 
-std::string SQL::Login::_sqlResponse("{ \
+std::string pgsql::Login::_sqlResponse("{ \
     \"sender\":\"dataBaseService\", \
     \"receive\":\"web\",\
     \"level\":\"user\",\
@@ -36,7 +36,7 @@ std::string SQL::Login::_sqlResponse("{ \
     \"correct\":0\
 }");
 
-std::string SQL::ChangerPassword::_sqlResponse("{ \
+std::string pgsql::ChangerPassword::_sqlResponse("{ \
     \"sender\":\"dataBaseService\", \
     \"receive\":\"web\",\
     \"level\":\"user\",\
@@ -45,12 +45,11 @@ std::string SQL::ChangerPassword::_sqlResponse("{ \
     \"success\":0\
 }");
 
-
-Redis::VerifyCheckCode::VerifyCheckCode()
+redis::VerifyCheckCode::VerifyCheckCode()
 {
 }
 
-nlohmann::json Redis::VerifyCheckCode::constructResponse(const nlohmann::json &order, redisClient &memoryData)
+nlohmann::json redis::VerifyCheckCode::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
 {
     auto Iter = order.find("CheckCode");
     auto Iter2 = order.find("CheckCodeKeyName");
@@ -61,7 +60,6 @@ nlohmann::json Redis::VerifyCheckCode::constructResponse(const nlohmann::json &o
     {
         LOG(ERROR) << "not found CheckCode;order is " << order.dump();
         //....please construct err response Json
-
         result["success"] = 0;
         result["correct"] = 0;
         return result;
@@ -69,7 +67,7 @@ nlohmann::json Redis::VerifyCheckCode::constructResponse(const nlohmann::json &o
 
     std::string checkcode = Iter.value().get<std::string>();
     std::string CheckCodeKeyName = Iter2.value().get<std::string>();
-    redisReplyWrap redisReply;
+    RedisReplyWrap redisReply;
 
     std::string str = "Get ";
     str += CheckCodeKeyName;
@@ -89,7 +87,7 @@ nlohmann::json Redis::VerifyCheckCode::constructResponse(const nlohmann::json &o
         redisContainCheckCode.append(redisReply.reply->str);
         break;
     default:
-        LOG(ERROR) << "redis order exec err! order is " << str << CUtil::Print_trace();
+        LOG(ERROR) << "redis order exec err! order is " << str << CUtil::printTrace();
         result["success"] = 0;
         result["correct"] = 0;
         return result;
@@ -108,11 +106,11 @@ nlohmann::json Redis::VerifyCheckCode::constructResponse(const nlohmann::json &o
     return result;
 }
 
-Redis::SetCheckCode::SetCheckCode()
+redis::SetCheckCode::SetCheckCode()
 {
 }
 
-nlohmann::json Redis::SetCheckCode::constructResponse(const nlohmann::json &order, redisClient &memoryData)
+nlohmann::json redis::SetCheckCode::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
 {
     auto Iter = order.find("CheckCode");
     auto Iter2 = order.find("CheckCodeKeyName");
@@ -128,7 +126,7 @@ nlohmann::json Redis::SetCheckCode::constructResponse(const nlohmann::json &orde
 
     std::string checkcode = Iter.value().get<std::string>();
     std::string CheckCodeKeyName = Iter2.value().get<std::string>();
-    redisReplyWrap redisReply;
+    RedisReplyWrap redisReply;
     std::string cmd = std::format("SET {} {}", CheckCodeKeyName, checkcode);
     memoryData.exeCommand(redisReply, cmd);
     if (redisReply.reply && strcmp(redisReply.reply->str, "OK") == 0)
@@ -139,33 +137,36 @@ nlohmann::json Redis::SetCheckCode::constructResponse(const nlohmann::json &orde
     return result;
 }
 
-SQL::SQLOperation::SQLOperation()
+pgsql::PgSqlOperation::PgSqlOperation()
 {
 }
 
-SQL::Register::Register()
+pgsql::Register::Register()
 {
 }
 
-bool SQL::SQLOperation::sqlExec(std::string cmd, pgsqlClient &memoryData, pqxx::result &reply)
+bool pgsql::PgSqlOperation::sqlExec(std::string cmd, PgSqlClient &memoryData, pqxx::result &reply)
 {
     bool ret = false;
-   try{
+    // try exec a command to pgsql, if error, throw command error and others
+    try
+    {
         reply = memoryData.execCommandOneSql(cmd);
         ret = true;
     }
-    catch(const pqxx::sql_error &e)
+    catch (const pqxx::sql_error &e)
     {
         LOG(ERROR) << "SQL error: " << e.what() << std::endl;
         LOG(ERROR) << "Query was: " << e.query() << std::endl;
-    } 
-    catch (const std::exception &e) {
+    }
+    catch (const std::exception &e)
+    {
         LOG(ERROR) << "Error: " << e.what() << std::endl;
     }
     return ret;
 }
 
-nlohmann::json SQL::Register::constructResponse(const nlohmann::json &order, pgsqlClient &memoryData)
+nlohmann::json pgsql::Register::constructResponse(const nlohmann::json &order, PgSqlClient &memoryData)
 {
     nlohmann::json result;
     auto Iter0 = order.find("username");
@@ -186,22 +187,24 @@ nlohmann::json SQL::Register::constructResponse(const nlohmann::json &order, pgs
         LOG(ERROR) << "The required fields are blank, please check!Cur order is " << order.dump();
         return result;
     }
+    // insert infos to users table, and get the new row's id
     std::string cmd = std::format("INSERT INTO users (username, password, email) VALUES ('{}', '{}', '{}') RETURNING id;", username, password, email);
     pqxx::result reply;
-    if(sqlExec(cmd, memoryData, reply))
+    if (sqlExec(cmd, memoryData, reply))
     {
         int user_id = reply.size() > 0 ? reply[0][0].as<int>() : 0;
+        // insert infos to usersResource table
         cmd = std::format("INSERT INTO usersResource (user_id, space_total, used_space) VALUES ({}, '{}', '{}');", user_id, space_total, used_space);
         result["success"] = sqlExec(cmd, memoryData, reply);
     }
     return result;
 }
 
-SQL::Login::Login()
+pgsql::Login::Login()
 {
 }
 
-nlohmann::json SQL::Login::constructResponse(const nlohmann::json &order, pgsqlClient &memoryData)
+nlohmann::json pgsql::Login::constructResponse(const nlohmann::json &order, PgSqlClient &memoryData)
 {
     nlohmann::json result;
     auto Iter0 = order.find("email");
@@ -214,13 +217,14 @@ nlohmann::json SQL::Login::constructResponse(const nlohmann::json &order, pgsqlC
         return result;
     }
     std::string email = Iter0.value().get<std::string>();
+    // select the password corresponding to the email
     std::string cmd = std::format("select * from users where email = '{}';", email);
     pqxx::result reply;
-    if(sqlExec(cmd, memoryData, reply))
+    if (sqlExec(cmd, memoryData, reply))
     {
         result["success"] = 1;
         std::string searchPwd = reply.size() > 0 ? reply[0][2].as<std::string>() : "";
-        if(searchPwd == order.find("password").value().get<std::string>())
+        if (searchPwd == order.find("password").value().get<std::string>())
         {
             result["correct"] = 1;
         }
@@ -228,11 +232,11 @@ nlohmann::json SQL::Login::constructResponse(const nlohmann::json &order, pgsqlC
     return result;
 }
 
-SQL::ChangerPassword::ChangerPassword()
+pgsql::ChangerPassword::ChangerPassword()
 {
 }
 
-nlohmann::json SQL::ChangerPassword::constructResponse(const nlohmann::json &order, pgsqlClient &memoryData)
+nlohmann::json pgsql::ChangerPassword::constructResponse(const nlohmann::json &order, PgSqlClient &memoryData)
 {
     nlohmann::json result;
     auto Iter0 = order.find("email");
@@ -247,12 +251,13 @@ nlohmann::json SQL::ChangerPassword::constructResponse(const nlohmann::json &ord
         LOG(ERROR) << "The required fields are blank, please check!Cur order is " << order.dump();
         return result;
     }
+    // update users table row;
     std::string cmd = std::format("update users set password = '{}' where email = '{}' RETURNING *;", password, email);
     pqxx::result reply;
-    if(sqlExec(cmd, memoryData, reply))
+    if (sqlExec(cmd, memoryData, reply))
     {
         std::string searchPwd = reply.size() > 0 ? reply[0][2].as<std::string>() : "";
-        if(searchPwd == password)
+        if (searchPwd == password)
         {
             result["success"] = 1;
         }

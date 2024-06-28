@@ -1,10 +1,8 @@
 #include "head.hpp"
 
-pgsqlClient::pgsqlClient(const nlohmann::json &value)
-:_conn(pgsqlClient::parse(value))
+PgSqlClient::PgSqlClient(const nlohmann::json &value)
+    : _conn(PgSqlClient::parse(value))
 {
-    // _connectStr = pgsqlClient::parse(value);
-    // _conn = std::move(pqxx::connection(_connectStr));
     if (_conn.is_open())
     {
         LOG(INFO) << "database connect success! str is " << _connectStr;
@@ -15,7 +13,7 @@ pgsqlClient::pgsqlClient(const nlohmann::json &value)
     }
 }
 
-pgsqlClient::pgsqlClient(std::string_view view)
+PgSqlClient::PgSqlClient(std::string_view view)
 {
     _connectStr = view;
     _conn = std::move(pqxx::connection(_connectStr));
@@ -29,11 +27,11 @@ pgsqlClient::pgsqlClient(std::string_view view)
     }
 }
 
-pgsqlClient::~pgsqlClient()
+PgSqlClient::~PgSqlClient()
 {
 }
 
-std::string pgsqlClient::parse(const nlohmann::json &value)
+std::string PgSqlClient::parse(const nlohmann::json &value)
 {
     std::string conn;
     auto iter = value.find("SQLDataBase");
@@ -42,7 +40,7 @@ std::string pgsqlClient::parse(const nlohmann::json &value)
         auto pgsqlIter = iter.value().find("Postgres");
         if (pgsqlIter != iter.value().end())
         {
-            auto PostgresIPIter = pgsqlIter.value().find("PostgresIP");//127.0.0.1");
+            auto PostgresIPIter = pgsqlIter.value().find("PostgresIP");
             auto PostgresPortIter = pgsqlIter.value().find("PostgresPort");
             auto dbnameIter = pgsqlIter.value().find("dbname");
             auto userIter = pgsqlIter.value().find("user");
@@ -55,8 +53,6 @@ std::string pgsqlClient::parse(const nlohmann::json &value)
             {
                 if (passwdIter == pgsqlIter.value().end())
                 {
-                    //"dbname=test user=postgres password=123456"
-
                     conn += "dbname=" + dbnameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + PostgresIPIter.value().get<std::string>() + " port=" + std::to_string(PostgresPortIter.value().get<int>());
                 }
                 else
@@ -77,7 +73,7 @@ std::string pgsqlClient::parse(const nlohmann::json &value)
     return conn;
 }
 
-pqxx::result pgsqlClient::execCommandOneSql(std::string_view view)
+pqxx::result PgSqlClient::execCommandOneSql(std::string_view view)
 {
     pqxx::result res;
     pqxx::nontransaction work(_conn);

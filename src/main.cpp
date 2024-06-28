@@ -3,8 +3,8 @@
 
 int main(int argc, char **argv)
 {
-    Log_MQ mq(argv[0]);
-    std::vector<zmqGateWay> zGateArr;
+    LogMQ mq(argv[0]);
+    std::vector<ZmqGateway> zGateArr;
     auto count = Singleton::getInstance().GetConf().find("BackendDealerThreadNumber").value().get<int>();
     for (int i = 0; i < count; i++)
     {

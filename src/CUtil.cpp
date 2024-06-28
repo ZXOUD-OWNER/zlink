@@ -1,8 +1,8 @@
 #include "head.hpp"
 
-std::string CUtil::ConstructResponseMsgRedis(const nlohmann::json &req)
+std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
 {
-    thread_local interactionLogic<redisClient> interaction(Singleton::getInstance().GetConf());
+    thread_local InteractionLogic<RedisClient> interaction(Singleton::getInstance().GetConf());
     nlohmann::json resJson;
 
     auto orderIter = req.find("order");
@@ -23,7 +23,7 @@ std::string CUtil::ConstructResponseMsgRedis(const nlohmann::json &req)
     switch (iter->second)
     {
     case 0:
-        interaction.exeOrder<Redis::VerifyCheckCode>(req, resJson);
+        interaction.exeOrder<redis::VerifyCheckCode>(req, resJson);
         break;
 
     default:
@@ -34,9 +34,9 @@ std::string CUtil::ConstructResponseMsgRedis(const nlohmann::json &req)
     return std::string(resJson.dump());
 }
 
-std::string CUtil::ConstructResponseMsgPgSQL(const nlohmann::json &req)
+std::string CUtil::constructResponseMsgPgSQL(const nlohmann::json &req)
 {
-    thread_local interactionLogic<pgsqlClient> interaction(Singleton::getInstance().GetConf());
+    thread_local InteractionLogic<PgSqlClient> interaction(Singleton::getInstance().GetConf());
     nlohmann::json resJson;
 
     auto orderIter = req.find("order");
@@ -57,7 +57,7 @@ std::string CUtil::ConstructResponseMsgPgSQL(const nlohmann::json &req)
     switch (iter->second)
     {
     case 0:
-        interaction.exeOrder<SQL::Register>(req, resJson);
+        interaction.exeOrder<pgsql::Register>(req, resJson);
         break;
 
     default:
@@ -68,15 +68,14 @@ std::string CUtil::ConstructResponseMsgPgSQL(const nlohmann::json &req)
     return std::string(resJson.dump());
 }
 
-std::string CUtil::Print_trace()
+std::string CUtil::printTrace()
 {
     unw_cursor_t cursor;
     unw_context_t context;
     std::string temp;
-    // Init context
+    // init context
     unw_getcontext(&context);
     unw_init_local(&cursor, &context);
-
     // traverse the call stack
     while (unw_step(&cursor) > 0)
     {
