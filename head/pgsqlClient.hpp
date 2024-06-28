@@ -9,7 +9,7 @@
 #pragma once
 #include "system.hpp"
 
-class PgSqlClient
+class PgsqlClient
 {
 private:
     std::string _connectStr;
@@ -23,13 +23,13 @@ private:
     static std::string parse(const nlohmann::json &value);
 
 public:
-    PgSqlClient(const nlohmann::json &value);
-    PgSqlClient(std::string_view view);
+    PgsqlClient(const nlohmann::json &value);
+    PgsqlClient(std::string_view view);
     /**
      * @description: exec one SQL command to PostgreSQL server
      * @param {string_view} view: one SQL statements
      * @return {pqxx::result} a row data of PostgreSQL reply
      */
     pqxx::result execCommandOneSql(std::string_view view);
-    ~PgSqlClient();
+    ~PgsqlClient();
 };

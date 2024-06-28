@@ -139,7 +139,7 @@ pgsql::Register::Register()
 {
 }
 
-bool pgsql::PgSqlOperation::sqlExec(std::string cmd, PgSqlClient &memoryData, pqxx::result &reply)
+bool pgsql::PgSqlOperation::sqlExec(std::string cmd, PgsqlClient &memoryData, pqxx::result &reply)
 {
     bool ret = false;
     // try exec a command to pgsql, if error, throw command error and others
@@ -160,7 +160,7 @@ bool pgsql::PgSqlOperation::sqlExec(std::string cmd, PgSqlClient &memoryData, pq
     return ret;
 }
 
-nlohmann::json pgsql::Register::constructResponse(const nlohmann::json &order, PgSqlClient &memoryData)
+nlohmann::json pgsql::Register::constructResponse(const nlohmann::json &order, PgsqlClient &memoryData)
 {
     nlohmann::json result;
     auto iter0 = order.find("username");
@@ -198,7 +198,7 @@ pgsql::Login::Login()
 {
 }
 
-nlohmann::json pgsql::Login::constructResponse(const nlohmann::json &order, PgSqlClient &memoryData)
+nlohmann::json pgsql::Login::constructResponse(const nlohmann::json &order, PgsqlClient &memoryData)
 {
     nlohmann::json result;
     auto iter0 = order.find("email");
@@ -230,7 +230,7 @@ pgsql::ChangerPassword::ChangerPassword()
 {
 }
 
-nlohmann::json pgsql::ChangerPassword::constructResponse(const nlohmann::json &order, PgSqlClient &memoryData)
+nlohmann::json pgsql::ChangerPassword::constructResponse(const nlohmann::json &order, PgsqlClient &memoryData)
 {
     nlohmann::json result;
     auto iter0 = order.find("email");

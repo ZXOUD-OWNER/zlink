@@ -4,7 +4,7 @@
  * Author: A529yyds(email:1041389196@qq.com)
  * create: 20240620
  * FilePath: /zlink/head/Order.hpp
- * Description: send command to redis or pgsql, then converted reply to json data
+ * Description: send command to redis or PostgreSQL, then converted reply to json data
  */
 #pragma once
 #include "system.hpp"
@@ -66,16 +66,16 @@ namespace pgsql
 
     protected:
         /**
-         * @description: some exec operations to pgsql, used in specific operation as common interface
+         * @description: some exec operations to PostgreSQL, used in specific operation as common interface
          * @param {string} cmd: PostgreSQL exec command
-         * @param {PgSqlClient} &memoryData: PostgreSQL client
+         * @param {PgsqlClient} &memoryData: PostgreSQL client
          * @param {result} &reply: reply from PostgreSQL server, most cases is a row of data
          * @return {bool}: result as follows, success/fail
          */
-        bool sqlExec(std::string cmd, PgSqlClient &memoryData, pqxx::result &reply);
+        bool sqlExec(std::string cmd, PgsqlClient &memoryData, pqxx::result &reply);
 
     public:
-        virtual nlohmann::json constructResponse(const nlohmann::json &order, PgSqlClient &memoryData) = 0;
+        virtual nlohmann::json constructResponse(const nlohmann::json &order, PgsqlClient &memoryData) = 0;
         PgSqlOperation();
         virtual ~PgSqlOperation()
         {
@@ -89,12 +89,12 @@ namespace pgsql
 
     public:
         /**
-         * @description: construct json response of register to pgsql
+         * @description: construct json response of register to PostgreSQL
          * @param {json} &order: register order as json
-         * @param {PgSqlClient} &memoryData: PostgreSQL client
+         * @param {PgsqlClient} &memoryData: PostgreSQL client
          * @return {json} reply
          */
-        nlohmann::json constructResponse(const nlohmann::json &order, PgSqlClient &memoryData);
+        nlohmann::json constructResponse(const nlohmann::json &order, PgsqlClient &memoryData);
         Register();
         inline ~Register()
         {
@@ -108,12 +108,12 @@ namespace pgsql
 
     public:
         /**
-         * @description: construct json response of login to pgsql
+         * @description: construct json response of login to PostgreSQL
          * @param {json} &order: login order as json
-         * @param {PgSqlClient} &memoryDataa: PostgreSQL client
+         * @param {PgsqlClient} &memoryDataa: PostgreSQL client
          * @return {json} PostgreSQL reply
          */
-        nlohmann::json constructResponse(const nlohmann::json &order, PgSqlClient &memoryData);
+        nlohmann::json constructResponse(const nlohmann::json &order, PgsqlClient &memoryData);
         Login();
         inline ~Login()
         {
@@ -127,12 +127,12 @@ namespace pgsql
 
     public:
         /**
-         * @description: construct json response of changer password to pgsql
+         * @description: construct json response of changer password to PostgreSQL
          * @param {json} &order: change user table infos like password order as json
-         * @param {PgSqlClient} &memoryData: PostgreSQL client
+         * @param {PgsqlClient} &memoryData: PostgreSQL client
          * @return {json} PostgreSQL reply
          */
-        nlohmann::json constructResponse(const nlohmann::json &order, PgSqlClient &memoryData);
+        nlohmann::json constructResponse(const nlohmann::json &order, PgsqlClient &memoryData);
         ChangerPassword();
         inline ~ChangerPassword()
         {

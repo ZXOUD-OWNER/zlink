@@ -1,7 +1,7 @@
 #include "head.hpp"
 
-PgSqlClient::PgSqlClient(const nlohmann::json &value)
-    : _conn(PgSqlClient::parse(value))
+PgsqlClient::PgsqlClient(const nlohmann::json &value)
+    : _conn(PgsqlClient::parse(value))
 {
     if (_conn.is_open())
     {
@@ -13,7 +13,7 @@ PgSqlClient::PgSqlClient(const nlohmann::json &value)
     }
 }
 
-PgSqlClient::PgSqlClient(std::string_view view)
+PgsqlClient::PgsqlClient(std::string_view view)
 {
     _connectStr = view;
     _conn = std::move(pqxx::connection(_connectStr));
@@ -27,11 +27,11 @@ PgSqlClient::PgSqlClient(std::string_view view)
     }
 }
 
-PgSqlClient::~PgSqlClient()
+PgsqlClient::~PgsqlClient()
 {
 }
 
-std::string PgSqlClient::parse(const nlohmann::json &value)
+std::string PgsqlClient::parse(const nlohmann::json &value)
 {
     std::string conn;
     auto iter = value.find("SQLDataBase");
@@ -73,7 +73,7 @@ std::string PgSqlClient::parse(const nlohmann::json &value)
     return conn;
 }
 
-pqxx::result PgSqlClient::execCommandOneSql(std::string_view view)
+pqxx::result PgsqlClient::execCommandOneSql(std::string_view view)
 {
     pqxx::result res;
     pqxx::nontransaction work(_conn);
