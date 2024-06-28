@@ -1,10 +1,8 @@
 #include "head.hpp"
 
-pgsqlClient::pgsqlClient(const nlohmann::json &value)
-:_conn(pgsqlClient::parse(value))
+PgsqlClient::PgsqlClient(const nlohmann::json &value)
+    : _conn(PgsqlClient::parse(value))
 {
-    // _connectStr = pgsqlClient::parse(value);
-    // _conn = std::move(pqxx::connection(_connectStr));
     if (_conn.is_open())
     {
         LOG(INFO) << "database connect success! str is " << _connectStr;
@@ -15,7 +13,7 @@ pgsqlClient::pgsqlClient(const nlohmann::json &value)
     }
 }
 
-pgsqlClient::pgsqlClient(std::string_view view)
+PgsqlClient::PgsqlClient(std::string_view view)
 {
     _connectStr = view;
     _conn = std::move(pqxx::connection(_connectStr));
@@ -29,11 +27,11 @@ pgsqlClient::pgsqlClient(std::string_view view)
     }
 }
 
-pgsqlClient::~pgsqlClient()
+PgsqlClient::~PgsqlClient()
 {
 }
 
-std::string pgsqlClient::parse(const nlohmann::json &value)
+std::string PgsqlClient::parse(const nlohmann::json &value)
 {
     std::string conn;
     auto iter = value.find("SQLDataBase");
@@ -42,12 +40,12 @@ std::string pgsqlClient::parse(const nlohmann::json &value)
         auto pgsqlIter = iter.value().find("Postgres");
         if (pgsqlIter != iter.value().end())
         {
-            auto PostgresIPIter = pgsqlIter.value().find("PostgresIP");//127.0.0.1");
-            auto PostgresPortIter = pgsqlIter.value().find("PostgresPort");
-            auto dbnameIter = pgsqlIter.value().find("dbname");
+            auto postgresIpIter = pgsqlIter.value().find("PostgresIP");
+            auto postgresPortIter = pgsqlIter.value().find("PostgresPort");
+            auto dbNameIter = pgsqlIter.value().find("dbname");
             auto userIter = pgsqlIter.value().find("user");
             auto passwdIter = pgsqlIter.value().find("passwd");
-            if (PostgresIPIter == pgsqlIter.value().end() || PostgresPortIter == pgsqlIter.value().end() || dbnameIter == pgsqlIter.value().end() || userIter == pgsqlIter.value().end())
+            if (postgresIpIter == pgsqlIter.value().end() || postgresPortIter == pgsqlIter.value().end() || dbNameIter == pgsqlIter.value().end() || userIter == pgsqlIter.value().end())
             {
                 LOG(FATAL) << "sql conf not found necessary info";
             }
@@ -55,13 +53,11 @@ std::string pgsqlClient::parse(const nlohmann::json &value)
             {
                 if (passwdIter == pgsqlIter.value().end())
                 {
-                    //"dbname=test user=postgres password=123456"
-
-                    conn += "dbname=" + dbnameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + PostgresIPIter.value().get<std::string>() + " port=" + std::to_string(PostgresPortIter.value().get<int>());
+                    conn += "dbname=" + dbNameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + postgresIpIter.value().get<std::string>() + " port=" + std::to_string(postgresPortIter.value().get<int>());
                 }
                 else
                 {
-                    conn += "dbname=" + dbnameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + PostgresIPIter.value().get<std::string>() + " port=" + std::to_string(PostgresPortIter.value().get<int>()) + " password=" + PostgresPortIter.value().get<std::string>();
+                    conn += "dbname=" + dbNameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + postgresIpIter.value().get<std::string>() + " port=" + std::to_string(postgresPortIter.value().get<int>()) + " password=" + postgresPortIter.value().get<std::string>();
                 }
             }
         }
@@ -77,7 +73,7 @@ std::string pgsqlClient::parse(const nlohmann::json &value)
     return conn;
 }
 
-pqxx::result pgsqlClient::execCommandOneSql(std::string_view view)
+pqxx::result PgsqlClient::execCommandOneSql(std::string_view view)
 {
     pqxx::result res;
     pqxx::nontransaction work(_conn);

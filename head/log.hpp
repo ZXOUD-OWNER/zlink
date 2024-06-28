@@ -1,9 +1,17 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: 20240620
+ * FilePath: /zlink/head/log.hpp
+ * Description: output infos, warnings, errors and fatals log to terminal
+ */
 #pragma once
 #include "system.hpp"
 
-struct Log_MQ : public NonCopyable
+struct LogMQ : public NonCopyable
 {
-    inline Log_MQ(const char *execFileName)
+    inline LogMQ(const char *execFileName)
     {
         std::filesystem::path dirPath("./Log");
         if (!std::filesystem::exists(dirPath))
@@ -21,13 +29,8 @@ struct Log_MQ : public NonCopyable
         google::SetLogDestination(google::FATAL, "./Log/Fatallog_");
         FLAGS_minloglevel = google::INFO;
         google::InstallFailureSignalHandler();
-
-        // LOG(INFO) << "This is an information message";
-        // LOG(WARNING) << "This is a warning message";
-        // LOG(ERROR) << "This is an error message";
-        // LOG(FATAL) << "This is an FATAL message";
     }
-    inline ~Log_MQ()
+    inline ~LogMQ()
     {
         google::ShutdownGoogleLogging();
     }

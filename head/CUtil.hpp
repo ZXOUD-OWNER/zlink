@@ -1,20 +1,47 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: 20240622
+ * FilePath: /zlink/head/CUtil.hpp
+ * Description:
+ */
 #pragma once
 #include "system.hpp"
 
 struct CUtil
 {
-    static std::string Print_trace();
-    static std::string ConstructResponseMsgRedis(const nlohmann::json &req);
-    static std::string ConstructResponseMsgPgSQL(const nlohmann::json &req);
-    static inline void GetZMsg(zmsg_t *msg, std::string &msgStr)
+    /**
+     * @description: print trace
+     * @return {string} trace result
+     */
+    static std::string printTrace();
+    /**
+     * @description: construct redis server response messages
+     * @param {json} &req: send to redis command as nlohmann::json format
+     * @return {string} response from redis
+     */
+    static std::string constructResponseMsgRedis(const nlohmann::json &req);
+    /**
+     * @description: construct PostgreSQL server response messages
+     * @param {json} &req: send to PostgreSQL command as nlohmann::json format
+     * @return {response from PostgreSQL} response from PostgreSQL
+     */
+    static std::string constructResponseMsgPgSQL(const nlohmann::json &req);
+    /**
+     * @description: parse ZeroMQ messages into std::string data
+     * @param {zmsg_t} *msg: raw ZeroMQ pointer
+     * @param {string} &msgStr: converted value
+     */
+    static inline void getZMsg(zmsg_t *msg, std::string &msgStr)
     {
-        char *frame_content;
-        while ((frame_content = zmsg_popstr(msg)) != NULL)
+        char *frameContent;
+        while ((frameContent = zmsg_popstr(msg)) != NULL)
         {
             // handle frame content
-            msgStr.append(frame_content);
-            printf("Frame content: %s\n", frame_content);
-            free(frame_content); // free memory
+            msgStr.append(frameContent);
+            printf("Frame content: %s\n", frameContent);
+            free(frameContent);
         }
     }
 };

@@ -1,17 +1,17 @@
 #include "head.hpp"
 
-zmqGateWay::zmqGateWay(const nlohmann::json &value)
+ZmqGateway::ZmqGateway(const nlohmann::json &value)
 {
     if (value.find("RouterIP") == value.end() || value.find("RouterPort") == value.end())
     {
-        LOG(FATAL) << "config.json not config zmqGateWay info";
+        LOG(FATAL) << "config.json not config ZmqGateway info";
     }
     _routerIP = value.find("RouterIP").value().get<std::string>();
     _routerPort = value.find("RouterPort").value().get<int>();
     start();
 }
 
-zmqGateWay::~zmqGateWay()
+ZmqGateway::~ZmqGateway()
 {
     if (_poller != nullptr)
     {
@@ -30,11 +30,10 @@ zmqGateWay::~zmqGateWay()
     _actor = nullptr;
 }
 
-void zmqGateWay::worker(zsock_t *pipe, void *args)
+void ZmqGateway::worker(zsock_t *pipe, void *args)
 {
-    auto &zmqGate = *(static_cast<zmqGateWay *>(args));
+    auto &zmqGate = *(static_cast<ZmqGateway *>(args));
     zsock_signal(pipe, 0);
-
     std::string tcpStr = "tcp://";
     tcpStr += zmqGate._routerIP + ":" + std::to_string(zmqGate._routerPort);
     zmqGate._sock = zsock_new_req(tcpStr.c_str());
@@ -43,14 +42,11 @@ void zmqGateWay::worker(zsock_t *pipe, void *args)
         LOG(ERROR) << "connect zio err!";
         return;
     }
-
     zmqGate._poller = zpoller_new(pipe, zmqGate._sock, NULL);
     zpoller_set_nonstop(zmqGate._poller, true);
-
     //  Tell broker we're ready for work
     zframe_t *frame = zframe_new(WORKER_READY, 1);
     zframe_send(&frame, zmqGate._sock, 0);
-
     //  Process messages as they arrive
     while (true)
     {
@@ -62,43 +58,36 @@ void zmqGateWay::worker(zsock_t *pipe, void *args)
         else
             assert(ready == zmqGate._sock); // Data Available
 
-        zmsg_t *old_msg = zmsg_recv(zmqGate._sock);
-        if (!old_msg)
-            break; //  Interrupted
-
+        zmsg_t *oldMsg = zmsg_recv(zmqGate._sock);
+        if (!oldMsg)
+            break; // Interrupted
         std::string content;
-        // content.append("hello hundang kkkkkkk");
-        zmsg_t *new_msg = zmsg_new();
-        zframe_t *frame1 = zmsg_pop(old_msg);
-        zframe_t *frame2 = zmsg_pop(old_msg);
-        // zframe_t *frame3 = zmsg_pop(old_msg);
-        CUtil::GetZMsg(old_msg, content);
+        zmsg_t *newMsg = zmsg_new();
+        zframe_t *frame1 = zmsg_pop(oldMsg);
+        zframe_t *frame2 = zmsg_pop(oldMsg);
+        CUtil::getZMsg(oldMsg, content);
         auto json = nlohmann::json::parse(content);
         std::string msg;
-        switch (Singleton::getInstance().GetDataBaseType())
+        switch (Singleton::getInstance().getDataBaseType())
         {
         case 0:
-            msg = CUtil::ConstructResponseMsgRedis(json);
+            msg = CUtil::constructResponseMsgRedis(json);
             break;
         case 1:
-            msg = CUtil::ConstructResponseMsgPgSQL(json);
+            msg = CUtil::constructResponseMsgPgSQL(json);
         default:
-            LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::Print_trace();
+            LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::printTrace();
             break;
         }
-
-        // auto k = zmsg_size(old_msg);
-        zmsg_append(new_msg, &frame1);
-        zmsg_append(new_msg, &frame2);
-
+        zmsg_append(newMsg, &frame1);
+        zmsg_append(newMsg, &frame2);
         zframe_t *frame4 = zframe_new(msg.c_str(), msg.length());
-        zmsg_append(new_msg, &frame4); // can not use zmsg_pushstr,has problem
-
-        zmsg_send(&new_msg, zmqGate._sock);
+        zmsg_append(newMsg, &frame4); // can not use zmsg_pushstr,has problem
+        zmsg_send(&newMsg, zmqGate._sock);
     }
 }
 
-void zmqGateWay::start()
+void ZmqGateway::start()
 {
     _actor = zactor_new(worker, this);
 }
