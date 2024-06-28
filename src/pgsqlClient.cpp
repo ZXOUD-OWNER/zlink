@@ -40,12 +40,12 @@ std::string PgSqlClient::parse(const nlohmann::json &value)
         auto pgsqlIter = iter.value().find("Postgres");
         if (pgsqlIter != iter.value().end())
         {
-            auto postgresIPIter = pgsqlIter.value().find("PostgresIP");
+            auto postgresIpIter = pgsqlIter.value().find("PostgresIP");
             auto postgresPortIter = pgsqlIter.value().find("PostgresPort");
             auto dbNameIter = pgsqlIter.value().find("dbname");
             auto userIter = pgsqlIter.value().find("user");
             auto passwdIter = pgsqlIter.value().find("passwd");
-            if (postgresIPIter == pgsqlIter.value().end() || postgresPortIter == pgsqlIter.value().end() || dbNameIter == pgsqlIter.value().end() || userIter == pgsqlIter.value().end())
+            if (postgresIpIter == pgsqlIter.value().end() || postgresPortIter == pgsqlIter.value().end() || dbNameIter == pgsqlIter.value().end() || userIter == pgsqlIter.value().end())
             {
                 LOG(FATAL) << "sql conf not found necessary info";
             }
@@ -53,11 +53,11 @@ std::string PgSqlClient::parse(const nlohmann::json &value)
             {
                 if (passwdIter == pgsqlIter.value().end())
                 {
-                    conn += "dbname=" + dbNameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + postgresIPIter.value().get<std::string>() + " port=" + std::to_string(postgresPortIter.value().get<int>());
+                    conn += "dbname=" + dbNameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + postgresIpIter.value().get<std::string>() + " port=" + std::to_string(postgresPortIter.value().get<int>());
                 }
                 else
                 {
-                    conn += "dbname=" + dbNameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + postgresIPIter.value().get<std::string>() + " port=" + std::to_string(postgresPortIter.value().get<int>()) + " password=" + postgresPortIter.value().get<std::string>();
+                    conn += "dbname=" + dbNameIter.value().get<std::string>() + " user=" + userIter.value().get<std::string>() + " hostaddr=" + postgresIpIter.value().get<std::string>() + " port=" + std::to_string(postgresPortIter.value().get<int>()) + " password=" + postgresPortIter.value().get<std::string>();
                 }
             }
         }
