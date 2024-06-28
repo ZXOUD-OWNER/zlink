@@ -45,7 +45,7 @@ public:
      * @description: get the contexts of the server configuration file
      * @return {json} server configuration context
      */
-    inline const auto &GetConf()
+    inline const auto &getConf()
     {
         return _conf;
     }
@@ -53,7 +53,7 @@ public:
      * @description: get data base type
      * @return {int} database type
      */
-    inline int GetDataBaseType()
+    inline int getDataBaseType()
     {
         return _enableDataBaseType;
     }

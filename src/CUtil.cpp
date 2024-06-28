@@ -2,7 +2,7 @@
 
 std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
 {
-    thread_local InteractionLogic<RedisClient> interaction(Singleton::getInstance().GetConf());
+    thread_local InteractionLogic<RedisClient> interaction(Singleton::getInstance().getConf());
     nlohmann::json resJson;
 
     auto orderIter = req.find("order");
@@ -36,7 +36,7 @@ std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
 
 std::string CUtil::constructResponseMsgPgSQL(const nlohmann::json &req)
 {
-    thread_local InteractionLogic<PgSqlClient> interaction(Singleton::getInstance().GetConf());
+    thread_local InteractionLogic<PgSqlClient> interaction(Singleton::getInstance().getConf());
     nlohmann::json resJson;
 
     auto orderIter = req.find("order");
