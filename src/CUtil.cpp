@@ -25,7 +25,9 @@ std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
     case 0:
         interaction.exeOrder<redis::VerifyCheckCode>(req, resJson);
         break;
-
+    case 1:
+        interaction.exeOrder<redis::SetCheckCode>(req, resJson);
+        break;
     default:
         LOG(ERROR) << "The command corresponding to Redis parsing logic has not been developed.order is " << orderStr;
         break;
@@ -59,7 +61,12 @@ std::string CUtil::constructResponseMsgPgSQL(const nlohmann::json &req)
     case 0:
         interaction.exeOrder<pgsql::Register>(req, resJson);
         break;
-
+    case 1:
+        interaction.exeOrder<pgsql::Login>(req, resJson);
+        break;
+    case 2:
+        interaction.exeOrder<pgsql::ChangerPassword>(req, resJson);
+        break;
     default:
         LOG(ERROR) << "The command corresponding to Redis parsing logic has not been developed.order is " << orderStr;
         break;

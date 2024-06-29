@@ -65,11 +65,11 @@ nlohmann::json redis::VerifyCheckCode::constructResponse(const nlohmann::json &o
     }
     std::string checkcode = iter.value().get<std::string>();
     std::string checkCodeKeyName = iter2.value().get<std::string>();
-    RedisReplyWrap redisReply;
+    RedisReplyWrap redisReplyTemp;
     std::string str = "Get ";
     str += checkCodeKeyName;
-    memoryData.exeCommand(redisReply, str);
-    if (redisReply._reply == nullptr)
+    memoryData.exeCommand(redisReplyTemp, str);
+    if (redisReplyTemp._reply == nullptr)
     {
         //....please construct err response Json
         result["success"] = 0;
@@ -78,10 +78,10 @@ nlohmann::json redis::VerifyCheckCode::constructResponse(const nlohmann::json &o
     }
 
     std::string redisContainCheckCode;
-    switch (redisReply._reply->type)
+    switch (redisReplyTemp._reply->type)
     {
     case REDIS_REPLY_STRING:
-        redisContainCheckCode.append(redisReply._reply->str);
+        redisContainCheckCode.append(redisReplyTemp._reply->str);
         break;
     default:
         LOG(ERROR) << "redis order exec err! order is " << str << CUtil::printTrace();
@@ -120,10 +120,10 @@ nlohmann::json redis::SetCheckCode::constructResponse(const nlohmann::json &orde
     }
     std::string checkcode = iter.value().get<std::string>();
     std::string checkCodeKeyName = iter2.value().get<std::string>();
-    RedisReplyWrap redisReply;
+    RedisReplyWrap redisReplyTemp;
     std::string cmd = std::format("SET {} {}", checkCodeKeyName, checkcode);
-    memoryData.exeCommand(redisReply, cmd);
-    if (redisReply._reply && strcmp(redisReply._reply->str, "OK") == 0)
+    memoryData.exeCommand(redisReplyTemp, cmd);
+    if (redisReplyTemp._reply && strcmp(redisReplyTemp._reply->str, "OK") == 0)
     {
         //....please construct err response Json
         result["success"] = 1;

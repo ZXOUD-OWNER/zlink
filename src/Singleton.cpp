@@ -28,4 +28,13 @@ void Singleton::initRedisOrder()
 {
     _redisOrder.reserve(100 * 2);
     _redisOrder["verifyCheckCode"] = 0;
+    _redisOrder["SetCheckCode"] = 1;
+}
+
+void Singleton::initPgsqlOrder()
+{
+    _pgsqlOrder.reserve(100 * 2);
+    _pgsqlOrder["Register"] = 0;
+    _pgsqlOrder["Login"] = 1;
+    _pgsqlOrder["ChangerPassword"] = 2;
 }

@@ -52,3 +52,26 @@ void RedisClient::exeCommand(RedisReplyWrap &reply, const std::string &order)
     }
     reply._reply = replyTemp;
 }
+
+void RedisClient::startTransaction()
+{
+    _transactionOrderNum = 0;
+    redisAppendCommand(_client, "MULTI");
+}
+
+void RedisClient::addCommandToTransaction(const std::string &order)
+{
+    redisAppendCommand(_client, order.c_str());
+    ++_transactionOrderNum;
+}
+
+void RedisClient::exeTransaction(std::vector<RedisReplyWrap> &replyArry)
+{
+    redisAppendCommand(_client, "EXEC");
+    RedisReplyWrap temp;
+    for (decltype(_transactionOrderNum) i = 0; i < _transactionOrderNum; i++)
+    {
+        redisGetReply(_client, (void **)(&temp._reply));
+        replyArry.emplace_back(temp._reply);
+    }
+}
