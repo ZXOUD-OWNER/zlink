@@ -1,3 +1,11 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: 20240622
+ * FilePath: /zlink/src/Singleton.cpp
+ * Description: initial server connect configuration from config.json
+ */
 #include "head.hpp"
 #include "Singleton.hpp"
 
@@ -28,4 +36,13 @@ void Singleton::initRedisOrder()
 {
     _redisOrder.reserve(100 * 2);
     _redisOrder["verifyCheckCode"] = 0;
+    _redisOrder["SetCheckCode"] = 1;
+}
+
+void Singleton::initPgsqlOrder()
+{
+    _pgsqlOrder.reserve(100 * 2);
+    _pgsqlOrder["Register"] = 0;
+    _pgsqlOrder["Login"] = 1;
+    _pgsqlOrder["ChangerPassword"] = 2;
 }

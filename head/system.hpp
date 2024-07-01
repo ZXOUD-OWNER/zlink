@@ -7,7 +7,7 @@
  * Description: some system tools
  */
 #pragma once
-#include <mimalloc-override.h>
+#include <pqxx/pqxx>
 #include <czmq.h>
 #include <chrono>
 #include <thread>
@@ -21,7 +21,7 @@
 #include <unordered_map>
 #include <utility>
 #include <variant>
-#include <pqxx/pqxx>
+#include <mimalloc-override.h>
 #define WORKER_READY "\001"
 
 class NonCopyable
@@ -45,5 +45,17 @@ struct RedisReplyWrap : NonCopyable
             freeReplyObject(_reply);
             _reply = nullptr;
         }
+    }
+    inline RedisReplyWrap(RedisReplyWrap &&temp)
+    {
+        _reply = temp._reply;
+        temp._reply = nullptr;
+    }
+    inline RedisReplyWrap(redisReply *reply)
+        : _reply(reply)
+    {
+    }
+    inline RedisReplyWrap()
+    {
     }
 };

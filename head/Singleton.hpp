@@ -14,7 +14,10 @@ class Singleton
 {
 private:
     Singleton();
-    ~Singleton(){};
+    ~Singleton()
+    {
+    }
+
     Singleton(const Singleton &);
     Singleton &operator=(const Singleton &);
 
@@ -22,6 +25,7 @@ private:
     nlohmann::json _conf;
     int _enableDataBaseType = -1;
     std::unordered_map<std::string, int> _redisOrder;
+    std::unordered_map<std::string, int> _pgsqlOrder;
 
 private:
     /*@description: init redis order type as a map.
@@ -30,6 +34,15 @@ private:
     The selection of class template parameters
     */
     void initRedisOrder();
+
+    /**
+     * @description: init pgsql order type as a map.
+    Used to initialize the relationship between the instruction string and the number,
+    which is convenient for the exeOrder function in InteractionLogic of CUtil::constructResponseMsgPgsql.
+    The selection of class template parameters
+     * @return {*}
+     */
+    void initPgsqlOrder();
 
 public:
     /**

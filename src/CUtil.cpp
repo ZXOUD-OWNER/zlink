@@ -1,3 +1,11 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: 20240622
+ * FilePath: /zlink/src/CUtil.cpp
+ * Description:
+ */
 #include "head.hpp"
 
 std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
@@ -25,7 +33,9 @@ std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
     case 0:
         interaction.exeOrder<redis::VerifyCheckCode>(req, resJson);
         break;
-
+    case 1:
+        interaction.exeOrder<redis::SetCheckCode>(req, resJson);
+        break;
     default:
         LOG(ERROR) << "The command corresponding to Redis parsing logic has not been developed.order is " << orderStr;
         break;
@@ -59,7 +69,12 @@ std::string CUtil::constructResponseMsgPgSQL(const nlohmann::json &req)
     case 0:
         interaction.exeOrder<pgsql::Register>(req, resJson);
         break;
-
+    case 1:
+        interaction.exeOrder<pgsql::Login>(req, resJson);
+        break;
+    case 2:
+        interaction.exeOrder<pgsql::ChangerPassword>(req, resJson);
+        break;
     default:
         LOG(ERROR) << "The command corresponding to Redis parsing logic has not been developed.order is " << orderStr;
         break;

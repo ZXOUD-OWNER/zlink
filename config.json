@@ -1,0 +1,27 @@
+{
+    "RouterIP": "127.0.0.1",
+    "RouterPort": 9091,
+    "IOThreadNumber": 2,
+    "MemoryDataBase": {
+        "Redis": {
+            "RedisConnectIP": "127.0.0.1",
+            "RedisConnectPort": 1234,
+            "Order": [
+                "verifyCheckCode",
+                "SetCheckCode"
+            ]
+        }
+    },
+    "SQLDataBase": {
+        "Postgres": {
+            "PostgresIP": "127.0.0.1",
+            "PostgresPort": 5433,
+            "dbname": "postgres",
+            "user": "yugabyte"
+        }
+    },
+    "BackendDealerThreadNumber": 1,
+    "LogicConf": {},
+    "EnableDataBaseType": 0,
+    "10000": {}
+}

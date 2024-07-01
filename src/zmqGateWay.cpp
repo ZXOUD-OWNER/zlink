@@ -1,3 +1,11 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: 20240620
+ * FilePath: /zlink/src/zmqGateWay.cpp
+ * Description: ZeroMQ gateway
+ */
 #include "head.hpp"
 
 ZmqGateway::ZmqGateway(const nlohmann::json &value)
@@ -75,6 +83,7 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
             break;
         case 1:
             msg = CUtil::constructResponseMsgPgSQL(json);
+            break;
         default:
             LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::printTrace();
             break;
