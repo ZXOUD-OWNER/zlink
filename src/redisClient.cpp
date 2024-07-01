@@ -1,3 +1,11 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: 20240620
+ * FilePath: /zlink/src/redisClient.cpp
+ * Description: redis client command exec
+ */
 #include "head.hpp"
 
 RedisClient::RedisClient(const nlohmann::json &value)
@@ -7,7 +15,7 @@ RedisClient::RedisClient(const nlohmann::json &value)
         LOG(FATAL) << "config.json not config MemoryDataBase info";
     }
     auto value2 = value.find("MemoryDataBase").value();
-    if (value2.find("Redis") == value.end())
+    if (value2.find("Redis") == value2.end())
     {
         LOG(FATAL) << "config.json not config redis info";
     }

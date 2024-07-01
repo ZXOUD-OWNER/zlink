@@ -1,3 +1,12 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: yushou-cell(email:2354739167@qq.com)
+ * create: Do not edit
+ * FilePath: /zlink/src/pgsqlClient.cpp
+ * Description:PostgreSQL client command exec
+ */
+
 #include "head.hpp"
 
 PgsqlClient::PgsqlClient(const nlohmann::json &value)
@@ -45,6 +54,7 @@ std::string PgsqlClient::parse(const nlohmann::json &value)
             auto dbNameIter = pgsqlIter.value().find("dbname");
             auto userIter = pgsqlIter.value().find("user");
             auto passwdIter = pgsqlIter.value().find("passwd");
+            //
             if (postgresIpIter == pgsqlIter.value().end() || postgresPortIter == pgsqlIter.value().end() || dbNameIter == pgsqlIter.value().end() || userIter == pgsqlIter.value().end())
             {
                 LOG(FATAL) << "sql conf not found necessary info";

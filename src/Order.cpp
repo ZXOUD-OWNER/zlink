@@ -1,3 +1,11 @@
+/*
+ * This file is part of the software and assets of HK ZXOUD LIMITED.
+ * @copyright (c) HK ZXOUD LIMITED https://www.zxoud.com
+ * Author: A529yyds(email:1041389196@qq.com)
+ * create: 20240620
+ * FilePath: /zlink/src/Order.cpp
+ * Description: send command to redis or PostgreSQL, then converted reply to json data
+ */
 #include "head.hpp"
 #include "Order.hpp"
 
