@@ -36,6 +36,12 @@ std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
     case 1:
         interaction.exeOrder<redis::SetCheckCode>(req, resJson);
         break;
+    case 2:
+        interaction.exeOrder<redis::CheckAccount>(req, resJson);
+        break;
+    case 3:
+        interaction.exeOrder<redis::CheckCodeExist>(req, resJson);
+        break;
     default:
         LOG(ERROR) << "The command corresponding to Redis parsing logic has not been developed.order is " << orderStr;
         break;

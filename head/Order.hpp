@@ -54,6 +54,48 @@ namespace redis
         {
         }
     };
+
+    class CheckAccount : NonCopyable
+    {
+    private:
+        nlohmann::json _order;
+        nlohmann::json _result;
+        static std::string _redisResponse;
+
+    public:
+        /**
+         * @description: construct json response of check account to redis email group
+         * @param {json} &order: check command
+         * @param {RedisClient} &memoryData: redis client
+         * @return {json}:json data converted from redis check result
+         */
+        nlohmann::json constructResponse(const nlohmann::json &order, RedisClient &memoryData);
+        CheckAccount();
+        inline ~CheckAccount()
+        {
+        }
+    };
+
+    class CheckCodeExist : NonCopyable
+    {
+    private:
+        nlohmann::json _order;
+        nlohmann::json _result;
+        static std::string _redisResponse;
+
+    public:
+        /**
+         * @description: construct json response of check code exist to redis email group
+         * @param {json} &order: check command
+         * @param {RedisClient} &memoryData: redis client
+         * @return {json}:json data converted from redis check result
+         */
+        nlohmann::json constructResponse(const nlohmann::json &order, RedisClient &memoryData);
+        CheckCodeExist();
+        inline ~CheckCodeExist()
+        {
+        }
+    };
 }
 
 namespace pgsql

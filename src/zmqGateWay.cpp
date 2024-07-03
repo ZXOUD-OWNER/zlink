@@ -76,7 +76,9 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
         CUtil::getZMsg(oldMsg, content);
         auto json = nlohmann::json::parse(content);
         std::string msg;
-        switch (Singleton::getInstance().getDataBaseType())
+
+        auto dataBaseIter = json.find("EnableDataBaseType");
+        switch (dataBaseIter.value().get<int>())
         {
         case 0:
             msg = CUtil::constructResponseMsgRedis(json);
