@@ -207,10 +207,14 @@ nlohmann::json redis::CheckAccount::constructResponse(const nlohmann::json &orde
     RedisReplyWrap replyTemp;
     std::string cmd = std::format("SISMEMBER {} {}", range, account);
     memoryData.exeCommand(replyTemp, cmd);
-    if (replyTemp._reply && replyTemp._reply->integer == 1)
+    //"success" indicates successful statement execution, while "exist" indicates the presence of the detected object
+    if (replyTemp._reply)
     {
-        result["exist"] = 1;
         result["success"] = 1;
+        if (replyTemp._reply->integer == 1)
+        {
+            result["exist"] = 1;
+        }
     }
     return result;
 }
@@ -236,6 +240,7 @@ nlohmann::json redis::CheckCodeExist::constructResponse(const nlohmann::json &or
     RedisReplyWrap replyTemp;
     std::string cmd = std::format("EXISTS {}", myCode);
     memoryData.exeCommand(replyTemp, cmd);
+    //"success" indicates successful statement execution, while "exist" indicates the presence of the detected object
     if (replyTemp._reply)
     {
         result["success"] = 1;
