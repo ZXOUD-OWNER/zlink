@@ -26,6 +26,24 @@ std::string redis::SetCheckCode::_redisResponse("{ \
     \"result\":\"SetCheckCode\"\
 }");
 
+std::string redis::CheckAccount::_redisResponse("{ \
+    \"sender\":\"redisService\", \
+    \"receive\":\"web\",\
+    \"level\":\"user\",\
+    \"exist\":0,\
+    \"result\":\"CheckAccount\",\
+    \"success\":0\
+}");
+
+std::string redis::CheckCodeExist::_redisResponse("{ \
+    \"sender\":\"redisService\", \
+    \"receive\":\"web\",\
+    \"level\":\"user\",\
+    \"exist\":0,\
+    \"result\":\"CheckCodeExist\",\
+    \"success\":0\
+}");
+
 std::string pgsql::Register::_sqlResponse("{ \
     \"sender\":\"dataBaseService\", \
     \"receive\":\"web\",\
@@ -135,10 +153,11 @@ nlohmann::json redis::SetCheckCode::constructResponse(const nlohmann::json &orde
 {
     auto iter = order.find("CheckCode");
     auto iter2 = order.find("CheckCodeKeyName");
+    auto iter3 = order.find("ExpirationTime");
     nlohmann::json result;
     result = nlohmann::json::parse(_redisResponse);
     result["success"] = 0;
-    if (iter == order.end() || iter2 == order.end())
+    if (iter == order.end() || iter2 == order.end() || iter3 == order.end())
     {
         LOG(ERROR) << "not found CheckCode;order is " << order.dump();
         //....please construct err response Json
@@ -146,13 +165,82 @@ nlohmann::json redis::SetCheckCode::constructResponse(const nlohmann::json &orde
     }
     std::string checkcode = iter.value().get<std::string>();
     std::string checkCodeKeyName = iter2.value().get<std::string>();
-    RedisReplyWrap redisReplyTemp;
+    RedisReplyWrap replyTemp;
     std::string cmd = std::format("SET {} {}", checkCodeKeyName, checkcode);
-    memoryData.exeCommand(redisReplyTemp, cmd);
-    if (redisReplyTemp._reply && strcmp(redisReplyTemp._reply->str, "OK") == 0)
+    memoryData.exeCommand(replyTemp, cmd);
+    if (replyTemp._reply && strcmp(replyTemp._reply->str, "OK") == 0)
     {
-        //....please construct err response Json
         result["success"] = 1;
+    }
+    result["success"] = 0;
+    std::string overtime = iter3.value().get<std::string>();
+    // set key value over time statements
+    cmd = std::format("EXPIRE {} {}", checkCodeKeyName, overtime);
+    memoryData.exeCommand(replyTemp, cmd);
+    if (replyTemp._reply && replyTemp._reply->integer == 1)
+    {
+        result["success"] = 1;
+    }
+    return result;
+}
+
+redis::CheckAccount::CheckAccount()
+{
+}
+
+nlohmann::json redis::CheckAccount::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
+{
+    auto iter1 = order.find("CheckAccount");
+    auto iter2 = order.find("VerifyRange");
+    nlohmann::json result;
+    result = nlohmann::json::parse(_redisResponse);
+    result["exist"] = 0;
+    result["success"] = 0;
+    if (iter1 == order.end() || iter2 == order.end())
+    {
+        LOG(ERROR) << "not found CheckCode;order is " << order.dump();
+        //....please construct err response Json
+        return result;
+    }
+    std::string account = iter1.value().get<std::string>();
+    std::string range = iter2.value().get<std::string>();
+    RedisReplyWrap replyTemp;
+    std::string cmd = std::format("SISMEMBER {} {}", range, account);
+    memoryData.exeCommand(replyTemp, cmd);
+    if (replyTemp._reply && replyTemp._reply->integer == 1)
+    {
+        result["exist"] = 1;
+        result["success"] = 1;
+    }
+    return result;
+}
+
+redis::CheckCodeExist::CheckCodeExist()
+{
+}
+
+nlohmann::json redis::CheckCodeExist::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
+{
+    auto iter = order.find("CheckCodeKey");
+    nlohmann::json result;
+    result = nlohmann::json::parse(_redisResponse);
+    result["exist"] = 0;
+    result["success"] = 0;
+    if (iter == order.end())
+    {
+        LOG(ERROR) << "not found CheckCode;order is " << order.dump();
+        //....please construct err response Json
+        return result;
+    }
+    std::string myCode = iter.value().get<std::string>();
+    RedisReplyWrap replyTemp;
+    std::string cmd = std::format("EXISTS {}", myCode);
+    memoryData.exeCommand(replyTemp, cmd);
+    if (replyTemp._reply)
+    {
+        result["success"] = 1;
+        if (replyTemp._reply->integer == 1)
+            result["exist"] = 1;
     }
     return result;
 }
@@ -268,16 +356,15 @@ nlohmann::json pgsql::Register::constructResponse(const nlohmann::json &order, P
         LOG(ERROR) << "The required fields are blank, please check!Cur order is " << order.dump();
         return result;
     }
-    // insert infos to users table, and get the new row's id
-    std::string cmd = std::format("INSERT INTO users (username, password, email) VALUES ('{}', '{}', '{}') RETURNING id;", username, password, email);
+    // insert infos to users and usersResource tables by one sql statement, and get the tables' row
+    std::string cmd = std::format("WITH ins AS (INSERT INTO users (username, password, email) \
+    VALUES ('{}', '{}', '{}') RETURNING id) \
+    INSERT INTO usersResource (user_id, space_total, used_space) \
+    VALUES ((SELECT id FROM ins), '{}', '{}');",
+                                  username, password, email, space_total, used_space);
     pqxx::result reply;
     if (sqlExec(cmd, memoryData, reply))
-    {
-        int user_id = reply.size() > 0 ? reply[0][0].as<int>() : 0;
-        // insert infos to usersResource table
-        cmd = std::format("INSERT INTO usersResource (user_id, space_total, used_space) VALUES ({}, '{}', '{}');", user_id, space_total, used_space);
-        result["success"] = sqlExec(cmd, memoryData, reply);
-    }
+        result["success"] = 1;
     return result;
 }
 
