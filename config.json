@@ -1,10 +1,10 @@
 {
-    "RouterIP": "127.0.0.1",
+    "RouterIP": "10.0.20.3",
     "RouterPort": 9091,
     "IOThreadNumber": 2,
     "MemoryDataBase": {
         "Redis": {
-            "RedisConnectIP": "127.0.0.1",
+            "RedisConnectIP": "10.0.20.3",
             "RedisConnectPort": 1234,
             "Order": [
                 "verifyCheckCode",
@@ -14,7 +14,7 @@
     },
     "SQLDataBase": {
         "Postgres": {
-            "PostgresIP": "127.0.0.1",
+            "PostgresIP": "10.0.20.3",
             "PostgresPort": 5433,
             "dbname": "postgres",
             "user": "yugabyte"
