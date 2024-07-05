@@ -20,7 +20,7 @@ std::string CUtil::constructResponseMsgRedis(const nlohmann::json &req)
         return std::string("-1");
     }
     std::string orderStr = orderIter.value().get<std::string>();
-    const auto &orderMap = Singleton::getInstance().GetRedisOrder();
+    const auto &orderMap = Singleton::getInstance().getRedisOrder();
     auto iter = orderMap.find(orderStr);
     if (iter == orderMap.end())
     {
@@ -62,7 +62,7 @@ std::string CUtil::constructResponseMsgPgSQL(const nlohmann::json &req)
         return std::string("-1");
     }
     std::string orderStr = orderIter.value().get<std::string>();
-    const auto &orderMap = Singleton::getInstance().GetRedisOrder();
+    const auto &orderMap = Singleton::getInstance().getPgsqlOrder();
     auto iter = orderMap.find(orderStr);
     if (iter == orderMap.end())
     {

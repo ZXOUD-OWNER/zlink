@@ -40,7 +40,7 @@ struct CUtil
         {
             // handle frame content
             msgStr.append(frameContent);
-            printf("Frame content: %s\n", frameContent);
+            LOG(INFO) << "Frame content: " << frameContent;
             free(frameContent);
         }
     }

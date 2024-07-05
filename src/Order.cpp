@@ -71,24 +71,6 @@ std::string pgsql::ChangerPassword::_sqlResponse("{ \
     \"success\":0\
 }");
 
-std::string redis::CheckAccount::_redisResponse("{ \
-    \"sender\":\"redisService\", \
-    \"receive\":\"web\",\
-    \"level\":\"user\",\
-    \"exist\":0,\
-    \"result\":\"CheckAccount\",\
-    \"success\":0\
-}");
-
-std::string redis::CheckCodeExist::_redisResponse("{ \
-    \"sender\":\"redisService\", \
-    \"receive\":\"web\",\
-    \"level\":\"user\",\
-    \"exist\":0,\
-    \"result\":\"CheckCodeExist\",\
-    \"success\":0\
-}");
-
 redis::VerifyCheckCode::VerifyCheckCode()
 {
 }
@@ -241,67 +223,6 @@ nlohmann::json redis::CheckCodeExist::constructResponse(const nlohmann::json &or
     std::string cmd = std::format("EXISTS {}", myCode);
     memoryData.exeCommand(replyTemp, cmd);
     //"success" indicates successful statement execution, while "exist" indicates the presence of the detected object
-    if (replyTemp._reply)
-    {
-        result["success"] = 1;
-        if (replyTemp._reply->integer == 1)
-            result["exist"] = 1;
-    }
-    return result;
-}
-
-redis::CheckAccount::CheckAccount()
-{
-}
-
-nlohmann::json redis::CheckAccount::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
-{
-    auto iter1 = order.find("CheckAccount");
-    auto iter2 = order.find("VerifyRange");
-    nlohmann::json result;
-    result = nlohmann::json::parse(_redisResponse);
-    result["exist"] = 0;
-    result["success"] = 0;
-    if (iter1 == order.end() || iter2 == order.end())
-    {
-        LOG(ERROR) << "not found CheckCode;order is " << order.dump();
-        //....please construct err response Json
-        return result;
-    }
-    std::string account = iter1.value().get<std::string>();
-    std::string range = iter2.value().get<std::string>();
-    RedisReplyWrap replyTemp;
-    std::string cmd = std::format("SISMEMBER {} {}", range, account);
-    memoryData.exeCommand(replyTemp, cmd);
-    if (replyTemp._reply && replyTemp._reply->integer == 1)
-    {
-        result["exist"] = 1;
-        result["success"] = 1;
-    }
-    return result;
-}
-
-redis::CheckCodeExist::CheckCodeExist()
-{
-}
-
-nlohmann::json redis::CheckCodeExist::constructResponse(const nlohmann::json &order, RedisClient &memoryData)
-{
-    auto iter = order.find("CheckCodeKey");
-    nlohmann::json result;
-    result = nlohmann::json::parse(_redisResponse);
-    result["exist"] = 0;
-    result["success"] = 0;
-    if (iter == order.end())
-    {
-        LOG(ERROR) << "not found CheckCode;order is " << order.dump();
-        //....please construct err response Json
-        return result;
-    }
-    std::string myCode = iter.value().get<std::string>();
-    RedisReplyWrap replyTemp;
-    std::string cmd = std::format("EXISTS {}", myCode);
-    memoryData.exeCommand(replyTemp, cmd);
     if (replyTemp._reply)
     {
         result["success"] = 1;

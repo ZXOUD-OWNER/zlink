@@ -47,6 +47,6 @@ void Singleton::initPgsqlOrder()
 {
     _pgsqlOrder.reserve(100 * 2);
     _pgsqlOrder["Register"] = 0;
-    _pgsqlOrder["Login"] = 1;
+    _pgsqlOrder["login"] = 1;
     _pgsqlOrder["ChangerPassword"] = 2;
 }
