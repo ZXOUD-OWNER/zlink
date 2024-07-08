@@ -74,8 +74,16 @@ public:
      * @description: get redis order
      * @return {std::unordered_map<std::string, int>} redis order map
      */
-    inline const std::unordered_map<std::string, int> &GetRedisOrder()
+    inline const std::unordered_map<std::string, int> &getRedisOrder()
     {
         return _redisOrder;
+    }
+    /**
+     * @description: get pgsql DataBase
+     * @return {std::unordered_map<std::string, int>} redis order map
+     */
+    inline const std::unordered_map<std::string, int> &getPgsqlOrder()
+    {
+        return _pgsqlOrder;
     }
 };

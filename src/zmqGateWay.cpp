@@ -38,13 +38,52 @@ ZmqGateway::~ZmqGateway()
     _actor = nullptr;
 }
 
+// #include <iostream>
+// void ZmqGateway::worker2(zsock_t *pipe, void *args)
+// {
+//     auto &zmqGate = *(static_cast<ZmqGateway *>(args));
+//     zsock_signal(pipe, 0);
+//     std::string tcpStr = "tcp://";
+//     tcpStr += zmqGate._routerIP + ":" + std::to_string(zmqGate._routerPort);
+//     zmqGate._sock = zsock_new(ZMQ_REP);
+//     // zmqGate._sock = zsock_new_rep("tcp://10.0.20.21:10010");
+//     auto kk = zsock_bind(zmqGate._sock, "tcp://10.0.20.189:10010");
+//     if (zmqGate._sock == nullptr)
+//     {
+//         LOG(ERROR) << "connect zio err!";
+//         return;
+//     }
+//     zmqGate._poller = zpoller_new(pipe, zmqGate._sock, NULL);
+//     zpoller_set_nonstop(zmqGate._poller, true);
+//     while (true)
+//     {
+//         zsock_t *ready = static_cast<zsock_t *>(zpoller_wait(zmqGate._poller, -1));
+//         if (ready == NULL)
+//             continue; // Interrupted
+//         else if (ready == pipe)
+//             break; // Shutdown
+//         else
+//             assert(ready == zmqGate._sock); // Data Available
+
+//         auto oldMsg = zstr_recv(zmqGate._sock);
+//         if (!oldMsg)
+//             break; // Interrupted
+//         std::string content;
+//         // zmsg_t *newMsg = zmsg_new();
+//         // zframe_t *frame1 = zmsg_pop(oldMsg);
+//         // zframe_t *frame2 = zmsg_pop(oldMsg);
+//         // CUtil::getZMsg(oldMsg, content);
+//     }
+// }
+
 void ZmqGateway::worker(zsock_t *pipe, void *args)
 {
     auto &zmqGate = *(static_cast<ZmqGateway *>(args));
     zsock_signal(pipe, 0);
     std::string tcpStr = "tcp://";
     tcpStr += zmqGate._routerIP + ":" + std::to_string(zmqGate._routerPort);
-    zmqGate._sock = zsock_new_req(tcpStr.c_str());
+    // Request-reply model, things supported by LVS in the currently verified zmq socket.
+    zmqGate._sock = zsock_new_rep(tcpStr.c_str());
     if (zmqGate._sock == nullptr)
     {
         LOG(ERROR) << "connect zio err!";
@@ -53,8 +92,8 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
     zmqGate._poller = zpoller_new(pipe, zmqGate._sock, NULL);
     zpoller_set_nonstop(zmqGate._poller, true);
     //  Tell broker we're ready for work
-    zframe_t *frame = zframe_new(WORKER_READY, 1);
-    zframe_send(&frame, zmqGate._sock, 0);
+    // zframe_t *frame = zframe_new(WORKER_READY, 1);
+    // zframe_send(&frame, zmqGate._sock, 0);
     //  Process messages as they arrive
     while (true)
     {
@@ -66,17 +105,21 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
         else
             assert(ready == zmqGate._sock); // Data Available
 
-        zmsg_t *oldMsg = zmsg_recv(zmqGate._sock);
+        char *oldMsg = zstr_recv(zmqGate._sock);
         if (!oldMsg)
             break; // Interrupted
-        std::string content;
-        zmsg_t *newMsg = zmsg_new();
-        zframe_t *frame1 = zmsg_pop(oldMsg);
-        zframe_t *frame2 = zmsg_pop(oldMsg);
-        CUtil::getZMsg(oldMsg, content);
+        std::string content(oldMsg);
+        zstr_free(&oldMsg);
+
+        // zmsg_t *newMsg = zmsg_new();
+        // zframe_t *frame1 = zmsg_pop(oldMsg);
+        // zframe_t *frame2 = zmsg_pop(oldMsg);
+        // CUtil::getZMsg(oldMsg, content);
         auto json = nlohmann::json::parse(content);
         std::string msg;
-        switch (Singleton::getInstance().getDataBaseType())
+
+        auto dataBaseIter = json.find("EnableDataBaseType");
+        switch (dataBaseIter.value().get<int>())
         {
         case 0:
             msg = CUtil::constructResponseMsgRedis(json);
@@ -88,11 +131,12 @@ void ZmqGateway::worker(zsock_t *pipe, void *args)
             LOG(FATAL) << "not support specify dataBase" << " func stack is " << CUtil::printTrace();
             break;
         }
-        zmsg_append(newMsg, &frame1);
-        zmsg_append(newMsg, &frame2);
-        zframe_t *frame4 = zframe_new(msg.c_str(), msg.length());
-        zmsg_append(newMsg, &frame4); // can not use zmsg_pushstr,has problem
-        zmsg_send(&newMsg, zmqGate._sock);
+        // zmsg_append(newMsg, &frame1);
+        // zmsg_append(newMsg, &frame2);
+        // zframe_t *frame4 = zframe_new(msg.c_str(), msg.length());
+        // zmsg_append(newMsg, &frame4); // can not use zmsg_pushstr,has problem
+        // zmsg_send(&newMsg, zmqGate._sock);
+        zstr_send(zmqGate._sock, msg.c_str());
     }
 }
 
